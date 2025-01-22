@@ -1,61 +1,95 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
+    /* Base colors */
+    --background: 26 30% 98%;     /* Very light shade of primary */
+    --foreground: 26 50% 20%;     /* Dark shade of primary */
+    
+    /* Card colors */
+    --card: 26 30% 98%;          /* Same as background */
+    --card-foreground: 26 50% 20%; /* Same as foreground */
+    
+    /* Popover colors */
+    --popover: 26 30% 98%;       /* Same as background */
+    --popover-foreground: 26 50% 20%; /* Same as foreground */
+    
+    /* Primary colors */
+    --primary: 26 50% 40%;       /* Your primary color #9a5c33 */
+    --primary-foreground: 26 30% 98%; /* Light contrast for primary */
+    
+    /* Secondary colors */
+    --secondary: 204 48% 47%;    /* Your secondary color #3e87b2 */
+    --secondary-foreground: 204 40% 98%; /* Light contrast for secondary */
+    
+    /* Muted colors */
+    --muted: 26 20% 90%;        /* Muted version of primary */
+    --muted-foreground: 26 30% 45%; /* Readable muted text */
+    
+    /* Accent colors */
+    --accent: 204 40% 90%;      /* Light version of secondary */
+    --accent-foreground: 204 48% 30%; /* Dark version of secondary */
+    
+    /* Destructive colors */
+    --destructive: 0 84% 60%;    /* Keeping red for destructive actions */
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 10% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    
+    /* Border and input colors */
+    --border: 26 30% 85%;       /* Light border based on primary */
+    --input: 26 30% 85%;        /* Matching border color */
+    --ring: 204 48% 47%;        /* Using secondary for focus rings */
+    
+    /* Chart colors - creating a palette that complements both colors */
+    --chart-1: 26 50% 40%;      /* Primary */
+    --chart-2: 204 48% 47%;     /* Secondary */
+    --chart-3: 26 40% 60%;      /* Lighter primary */
+    --chart-4: 204 40% 60%;     /* Lighter secondary */
+    --chart-5: 45 50% 50%;      /* Complementary color */
+    
     --radius: 0.5rem
   }
+
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    /* Dark theme - darker and more saturated versions */
+    --background: 26 30% 10%;    /* Dark background */
+    --foreground: 26 30% 90%;    /* Light text */
+    
+    --card: 26 30% 12%;
+    --card-foreground: 26 30% 90%;
+    
+    --popover: 26 30% 12%;
+    --popover-foreground: 26 30% 90%;
+    
+    --primary: 26 50% 40%;      /* Keeping primary consistent */
+    --primary-foreground: 26 30% 98%;
+    
+    --secondary: 204 48% 47%;   /* Keeping secondary consistent */
+    --secondary-foreground: 204 40% 98%;
+    
+    --muted: 26 20% 20%;
+    --muted-foreground: 26 20% 60%;
+    
+    --accent: 204 40% 20%;
+    --accent-foreground: 204 40% 90%;
+    
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%
+    
+    --border: 26 30% 20%;
+    --input: 26 30% 20%;
+    --ring: 204 48% 47%;
+    
+    /* Chart colors - slightly adjusted for dark theme visibility */
+    --chart-1: 26 60% 50%;      /* Brighter primary */
+    --chart-2: 204 58% 57%;     /* Brighter secondary */
+    --chart-3: 26 50% 70%;      /* Light primary */
+    --chart-4: 204 50% 70%;     /* Light secondary */
+    --chart-5: 45 60% 60%;      /* Brighter complementary */
   }
 }
+
 @layer base {
   * {
     @apply border-border;
