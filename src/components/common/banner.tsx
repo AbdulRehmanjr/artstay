@@ -175,7 +175,7 @@ export const Banner = ({ banner }: ComponentProps) => {
               >
                 <Button 
                   type="button"
-                  variant="outline"
+                  variant="secondary"
                   size="lg" 
                   className="w-fit text-xl"
                 >

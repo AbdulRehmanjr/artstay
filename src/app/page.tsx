@@ -4,7 +4,7 @@ import { FairLanding } from "~/components/landing/fair/home";
 import { SafariLanding } from "~/components/landing/safari/home";
 import { TourLanding } from "~/components/landing/tour/home";
 
-export default async function HomePage() {
+export default  function HomePage() {
   return (
     <>
       <ArtisanLanding />

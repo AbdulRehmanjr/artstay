@@ -58,7 +58,7 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
     <header
       className={cn(
         "sticky top-0 z-20 flex w-full flex-col bg-white text-primary transition-colors duration-300",
-        isScrolled && "bg-primary ",
+        isScrolled && "bg-primary",
       )}
     >
       <div className="hidden gap-6 bg-primary p-6 py-2 text-white lg:flex">
@@ -144,15 +144,10 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
       </div>
 
       <div className="mx-auto flex justify-between p-4">
-        <div
-          className={cn(
-            "relative ml-6 h-[50px] w-[150px] md:ml-0",
-            !isScrolled && "xl:h-[100px] xl:w-[200px]",
-          )}
-        >
+        <div className="relative ml-6 h-[50px] w-[150px] md:ml-0 xl:h-[100px] xl:w-[200px]">
           <Image
-            src="/logo/logo.png"
-            alt="logo for craftlore"
+            src={isScrolled ? "/logo/logo_2.png" : "/logo/logo_1.png"}
+            alt="logo for artstay"
             fill
             sizes="100%"
             priority
@@ -177,8 +172,9 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
               size="lg"
               type="button"
               variant={isScrolled ? "outline" : "default"}
+              asChild
             >
-              Join us
+              <Link href="join-us">Join us</Link>
             </Button>
           </nav>
         </div>

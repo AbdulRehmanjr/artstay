@@ -102,3 +102,37 @@ export const TourCardData = [
         des: "Kashmir's resorts offer luxurious stays in heritage hotels and houseboats on Dal Lake. Wellness retreats featuring Ayurvedic treatments and scenic views provide relaxation. Unique boutique resorts blend traditional architecture with modern amenities for a serene escape."
     },
 ]
+
+
+export const JoinCard = [
+    {
+        title: 'Kashmir Handicraft Artisan',
+        description: "Kashmir's artisans are the heart of our program. As a partner, you'll showcase your skills and stories through workshops, demonstrations, and interactions with tourists, providing an additional income stream.",
+        link: '#'
+    },
+    {
+        title: 'Kashmir Travel Agent',
+        description: "By collaborating with ArtStay, you can offer specialized packages that blend handicraft tourism. This partnership enhances your offerings and attracts tourists seeking more than sightseeing—a true cultural immersion.",
+        link: '#'
+    },
+    {
+        title: 'Craft Event Organizers',
+        description: "Craft event organizers unite artisans, locals, and tourists in vibrant celebrations of Kashmiri craft. Your expertise in planning craft fairs and artisan meet-and-greets ensures these gatherings are engaging and successful.",
+        link: '#'
+    },
+    {
+        title: 'Kashmir Handicraft Shop Owner',
+        description: "Joining the ArtStay Vendor Partnership connects you with culturally curious visitors eager to purchase genuine crafts. This collaboration boosts sales while educating consumers on the rich history and value of each item.",
+        link: '#'
+    },
+    {
+        title: 'Handicraft Visual Storyteller',
+        description: "Visual storytellers capture Kashmir’s handicrafts through stunning photography, videography, and aerial footage for tourists. Your work showcases the essence of Kashmir’s artisan heritage, inspiring a global audience and elevating crafts.",
+        link: '#'
+    },
+    {
+        title: 'Language Translator',
+        description: "Language translators bridge the communication gap between artisans and international tourists. Partnering with ArtStay ensures the accurate conveyance of Kashmiri craft stories, techniques, and cultural significance to global visitors.",
+        link: '#'
+    },
+]
