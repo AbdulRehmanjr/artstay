@@ -1,10 +1,14 @@
 import "~/styles/globals.css";
 
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "~/app/api/uploadthing/core";
 import { type Metadata } from "next";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Roboto, Poppins } from "next/font/google";
 import { ScrollToTop } from "~/components/common/scroll-top";
 import { Header } from "~/components/general/header";
+import { Toaster } from "~/components/ui/toaster";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -31,8 +35,10 @@ export default function RootLayout({
     <html lang="en" className={`${roboto.variable} ${poppin.variable}`}>
       <body>
         <TRPCReactProvider>
+        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
           <Header/>
           <main>{children}</main>
+          <Toaster/>
         </TRPCReactProvider>
         <ScrollToTop />
       </body>

@@ -108,7 +108,7 @@ export const JoinCard = [
     {
         title: 'Kashmir Handicraft Artisan',
         description: "Kashmir's artisans are the heart of our program. As a partner, you'll showcase your skills and stories through workshops, demonstrations, and interactions with tourists, providing an additional income stream.",
-        link: '#'
+        link: '/join-us/artisan'
     },
     {
         title: 'Kashmir Travel Agent',
