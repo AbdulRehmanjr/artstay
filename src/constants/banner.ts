@@ -102,3 +102,37 @@ export const tourBanner = [
     buttonText: "Explore more",
   },
 ];
+
+
+export const artisanBanner = [
+  {
+    title: "Vacation with Kashmiri Artisan",
+    subtitle: "Craftmanship Refined",
+    buttonText: "Explore more",
+  },
+  {
+    title: "Vacation with Kashmiri Artisan",
+    subtitle: "Percision and Skill",
+    buttonText: "Explore more",
+  },
+  {
+    title: "Vacation with Kashmiri Artisan",
+    subtitle: "Crafting Legacies",
+    buttonText: "Explore more",
+  },
+  {
+    title: "Vacation with Kashmiri Artisan",
+    subtitle: "Execellence in Every Stroke",
+    buttonText: "Explore more",
+  },
+  {
+    title: "Vacation with Kashmiri Artisan",
+    subtitle: "Crafting Brilliance",
+    buttonText: "Explore more",
+  },
+  {
+    title: "Vacation with Kashmiri Artisan",
+    subtitle: "Crafting Legends",
+    buttonText: "Explore more",
+  },
+]

@@ -33,7 +33,7 @@ function getLinkProps(href: string, disabled?: boolean, baseClass?: string) {
 
 const links = [
   { href: "/", title: "Home" },
-  { href: "/", title: "Artisans" },
+  { href: "/artisan", title: "Artisans" },
   { href: "/", title: "Safari" },
   { href: "/", title: "Fairs" },
   { href: "/", title: "Business" },
