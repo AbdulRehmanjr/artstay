@@ -4,7 +4,6 @@ import { ArtisanFilter } from "~/components/artisans/filter-tab";
 export default function ArtisanPage() {
   return (
     <>
-   
       <ArtisanFilter />
       <ArtisanList/>
     </>

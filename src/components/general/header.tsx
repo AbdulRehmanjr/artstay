@@ -33,11 +33,16 @@ function getLinkProps(href: string, disabled?: boolean, baseClass?: string) {
 
 const links = [
   { href: "/", title: "Home" },
-  { href: "/artisan", title: "Artisans" },
-  { href: "/", title: "Safari" },
-  { href: "/", title: "Fairs" },
-  { href: "/", title: "Business" },
-  { href: "/", title: "Hotel" },
+  { href: "/artisan", title: "Artisan Retreat" },
+  { href: "/", title: "Craft Safari" },
+  { href: "/", title: "Craft Fair" },
+  { href: "/", title: "Craft Shop" },
+  { href: "/", title: "Visual Storyteller" },
+  { href: "/", title: "Accomodation" },
+  { href: "/", title: "Heritage Dining" },
+  { href: "/", title: "Eco Transit" },
+  { href: "/", title: "Tour Coordinator" },
+  { href: "/", title: "Linguistic Consultant" },
 ];
 
 export const Header: FC<HeaderProps> = ({ disabled = false }) => {
@@ -57,7 +62,7 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
   return (
     <header
       className={cn(
-        "sticky top-0 z-20 flex w-full flex-col bg-white text-primary transition-colors duration-300",
+        "sticky top-0 z-[103] flex w-full flex-col bg-white text-primary transition-colors duration-300",
         isScrolled && "bg-primary",
       )}
     >
@@ -144,7 +149,7 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
       </div>
 
       <div className="mx-auto flex justify-between p-4">
-        <div className="relative ml-6 h-[50px] w-[150px] md:ml-0 xl:h-[100px] xl:w-[200px]">
+        <div className="relative ml-6 h-[30px] w-[100px] md:ml-0 xl:h-[50px] xl:w-[100px]">
           <Image
             src={isScrolled ? "/logo/logo_2.png" : "/logo/logo_1.png"}
             alt="logo for artstay"
@@ -153,9 +158,9 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
             priority
           />
         </div>
-        <div className="flex items-center px-6 py-4 lg:mx-auto">
+        <div className="flex items-center px-3 py-4 lg:mx-auto">
           <nav className="hidden lg:flex">
-            <menu className="flex items-center gap-6 font-bold">
+            <menu className="flex items-center gap-1 font-bold">
               {links.map((link, index) => (
                 <li key={index}>
                   <Button
@@ -168,14 +173,14 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
                 </li>
               ))}
             </menu>
-            <Button
+            {/* <Button
               size="lg"
               type="button"
               variant={isScrolled ? "outline" : "default"}
               asChild
             >
               <Link href="join-us">Join us</Link>
-            </Button>
+            </Button> */}
           </nav>
         </div>
       </div>

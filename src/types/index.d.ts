@@ -1,4 +1,8 @@
 
+type TraingEducationEnum = 'FORMAL' | 'NON_FORMAL'
+type CertificationEnum  ='NONE' | 'PROFESSIONAL' | 'TRADE' | 'WORKSHOP'
+type RecongnitionEnum = 'STATE' | 'NATIONAL' | 'INTERNATIONAL'
+type ExperienceEnum = 'APPRENTICE' | 'CRAFTMAN' | 'MASTER' | 'GRANDMASTER'
 type ApiResponseProps<T> = {
   status: boolean;
   message: string;
