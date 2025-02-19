@@ -7,6 +7,7 @@ import isBetween from "dayjs/plugin/isBetween";
 import weekday from "dayjs/plugin/weekday";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import { usePackage } from "~/hooks/use-artisan-package";
 
 dayjs.extend(isBetween);
 dayjs.extend(weekday);
@@ -23,23 +24,19 @@ interface CalendarDay {
   isCurrentMonth: boolean;
   isDisabled: boolean;
 }
+const weekDays: readonly string[] = [
+  "Su",
+  "Mo",
+  "Tu",
+  "We",
+  "Th",
+  "Fr",
+  "Sa",
+] as const;
 
 export const ArtisanCalendar = () => {
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
-  const [selectedRange, setSelectedRange] = useState<DateRange>({
-    start: null,
-    end: null,
-  });
-
-  const weekDays: readonly string[] = [
-    "Su",
-    "Mo",
-    "Tu",
-    "We",
-    "Th",
-    "Fr",
-    "Sa",
-  ] as const;
+  const { artisanPackage, setPackage } = usePackage();
 
   const generateCalendarDays = (date: Dayjs): CalendarDay[] => {
     const firstDayOfMonth = date.startOf("month");
@@ -84,38 +81,29 @@ export const ArtisanCalendar = () => {
     return days;
   };
 
-  const handleDateClick = (day: CalendarDay): void => {
+  const handleDateClick = (day: CalendarDay) => {
     if (day.isDisabled) return;
 
-    if (!selectedRange.start || (selectedRange.start && selectedRange.end)) {
-      setSelectedRange({
-        start: day.date,
-        end: null,
-      });
-    } else {
-      if (day.date.isBefore(selectedRange.start)) {
-        setSelectedRange({
-          start: day.date,
-          end: selectedRange.start,
-        });
-      } else {
-        setSelectedRange({
-          start: selectedRange.start,
-          end: day.date,
-        });
-      }
-    }
+    const startDate = day.date;
+    const endDate = startDate.add(artisanPackage.duration - 1, "day");
+
+    setPackage({
+      startDate: startDate.format("YYYY-MM-DD"),
+      endDate: endDate.format("YYYY-MM-DD"),
+    });
   };
 
   const isDateInRange = (date: Dayjs): boolean => {
-    if (!selectedRange.start || !selectedRange.end) return false;
-    return date.isBetween(selectedRange.start, selectedRange.end, "day", "[]");
+    if (!artisanPackage.startDate || !artisanPackage.endDate) return false;
+    const start = dayjs(artisanPackage.startDate);
+    const end = dayjs(artisanPackage.endDate);
+    return date.isBetween(start, end, "day", "[]");
   };
 
   const isDateSelected = (date: Dayjs): boolean => {
-    return Boolean(
-      selectedRange.start?.isSame(date, "day") ||
-        selectedRange.end?.isSame(date, "day"),
+    return (
+      date.format("YYYY-MM-DD") === artisanPackage.startDate ||
+      date.format("YYYY-MM-DD") === artisanPackage.endDate
     );
   };
 
@@ -149,7 +137,7 @@ export const ArtisanCalendar = () => {
               onClick={() => handleDateClick(day)}
               disabled={day.isDisabled}
               variant={isSelected || isInRange ? "default" : "outline"}
-              className="w-[5rem] h-[5rem]"
+              className="h-[5rem] w-[5rem]"
             >
               {day.date.date()}
             </Button>
@@ -161,6 +149,28 @@ export const ArtisanCalendar = () => {
 
   return (
     <>
+      {artisanPackage.startDate && (
+        <div className="mt-4 space-y-2 rounded-lg border bg-secondary/5 p-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Selected Period:</span>
+            <span className="font-medium text-secondary">
+              {artisanPackage.duration} Days
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Start Date:</span>
+            <span className="font-medium">
+              {dayjs(artisanPackage.startDate).format("MMM D, YYYY")}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">End Date:</span>
+            <span className="font-medium">
+              {dayjs(artisanPackage.endDate).format("MMM D, YYYY")}
+            </span>
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <Button
           variant="outline"

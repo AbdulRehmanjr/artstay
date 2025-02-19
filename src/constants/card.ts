@@ -113,7 +113,7 @@ export const JoinCard = [
     {
         title: 'Kashmir Travel Agent',
         description: "By collaborating with ArtStay, you can offer specialized packages that blend handicraft tourism. This partnership enhances your offerings and attracts tourists seeking more than sightseeing—a true cultural immersion.",
-        link: '#'
+        link: '/join-us/safari'
     },
     {
         title: 'Craft Event Organizers',

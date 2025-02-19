@@ -5,19 +5,29 @@ import { env } from "~/env";
 import axios, { AxiosError } from "axios";
 import { z } from "zod";
 
-export const artisanRouter = createTRPCRouter({
+export const registerRouter = createTRPCRouter({
 
-
-    getAllArtisans: publicProcedure
-        .input(
-            z.object({
-            limit: z.number().min(1).max(100),
-            cursor: z.number().nullish(),
+    createArtisan: publicProcedure
+        .input(z.object({
+            firstName: z.string(),
+            lastName: z.string(),
+            address: z.string(),
+            description: z.string(),
+            experience: z.string(),
+            education: z.string(),
+            training: z.string(),
+            certificate: z.string(),
+            recognition: z.string(),
+            craftId: z.string(),
+            subCraftId: z.string(),
+            email: z.string(),
+            password: z.string(),
+            dp: z.string(),
         }))
-        .query(async ({ input }) => {
+        .mutation(async ({ input }) => {
             try {
-                const response = await axios.get<ApiResponseProps<ArtisanPaginationProps>>(`${env.API_URL}/api/v1/artisan/all?limit=${input.limit}&cursor=${input.cursor ?? 0}`);
-                return response.data.data
+                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/api/v1/register/artisan`, { ...input });
+
             } catch (error) {
                 if (error instanceof TRPCClientError) {
                     console.error(error.message)
@@ -42,12 +52,20 @@ export const artisanRouter = createTRPCRouter({
             }
         }),
 
-    getArtisanDetail: publicProcedure
-        .input(z.object({ artisanId: z.string() }))
-        .query(async ({ input }) => {
+    createSafari: publicProcedure
+        .input(z.object({
+            firstName: z.string(),
+            lastName: z.string(),
+            address: z.string(),
+            description: z.string(),
+            email: z.string(),
+            password: z.string(),
+            dp: z.string(),
+        }))
+        .mutation(async ({ input }) => {
             try {
-                const response = await axios.get<ApiResponseProps<ArtisanPortolioProps>>(`${env.API_URL}/api/v1/artisan/${input.artisanId}`);
-                return response.data.data
+                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/api/v1/register/safari`, { ...input });
+
             } catch (error) {
                 if (error instanceof TRPCClientError) {
                     console.error(error.message)
@@ -71,4 +89,5 @@ export const artisanRouter = createTRPCRouter({
                 })
             }
         })
+
 })

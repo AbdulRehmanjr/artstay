@@ -23,6 +23,8 @@ import {
   getTrainingString,
 } from "~/lib/utils";
 import { ArtisanCalendar } from "~/components/artisans/artisan-calendar";
+import { HeadlingUnderline } from "~/components/common/heading-underline";
+import { ArtisanPackage } from "~/components/artisans/package/package-list";
 
 type PageProps = {
   searchParams: Promise<{ artisanId: string }>;
@@ -38,7 +40,7 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
     <Tabs defaultValue="general" className="w-full">
       <div className="relative flex flex-col items-center pb-6">
         <div className="flex gap-2">
-          <div className="relative -mt-[15rem] h-[15rem] w-[15rem] overflow-hidden rounded-lg shadow-lg">
+          <div className="relative -mt-[14rem] h-[15rem] w-[15rem] overflow-hidden rounded-lg shadow-lg">
             <Image
               src={artisan.dp}
               alt="Profile photo"
@@ -47,8 +49,8 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
               fill
               sizes="100%"
             />
-            <div className="absolute bottom-0 left-0 right-0 h-[6rem] bg-gradient-to-t from-[#9a5d33] to-transparent p-4">
-              <h2 className="text-center text-2xl font-semibold text-white">
+            <div className="absolute bottom-0 left-0 right-0 h-[4rem] bg-gradient-to-t from-[#9a5d33] to-transparent p-4">
+              <h2 className="text-center text-3xl font-semibold text-white">
                 {artisan.firstName} {artisan.lastName}
               </h2>
             </div>
@@ -75,10 +77,7 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
 
       <div className="mt-6 rounded-lg bg-white/90 p-6 text-gray-900 shadow-lg backdrop-blur">
         <TabsContent value="general" className="grid gap-6">
-          <h2 className="relative inline-block text-2xl font-semibold text-gray-800">
-            General Information
-            <div className="absolute -bottom-2 left-0 h-1 w-24 bg-primary" />
-          </h2>
+          <HeadlingUnderline title="General Information" />
           <div className="rounded-lg bg-primary p-8 text-white shadow-lg transition-all duration-300 hover:shadow-xl">
             <div className="flex flex-col gap-6">
               <div className="flex items-center justify-between">
@@ -201,10 +200,7 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
           value="portfolio"
           className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         >
-          <h2 className="relative col-span-full mb-8 inline-block text-2xl font-semibold text-gray-800">
-            My Portfolio
-            <div className="absolute -bottom-2 left-0 h-1 w-24 bg-primary" />
-          </h2>
+          <HeadlingUnderline title=" My Portfolio" />
           {artisan.Portfolio.images.map((image, index) => (
             <div
               key={index}
@@ -236,13 +232,16 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
             </div>
           )}
         </TabsContent>
-        <TabsContent value="packages"></TabsContent>
+        <TabsContent value="packages">
+          <HeadlingUnderline title="Learning Packages"/>
+          <ArtisanPackage packages={artisan.ArtisanPackage} />
+        </TabsContent>
         <TabsContent value="booking" className="grid gap-8">
           <h2 className="relative col-span-full inline-block text-2xl font-semibold text-gray-800">
             Booking
             <div className="absolute -bottom-2 left-0 h-1 w-24 bg-primary" />
           </h2>
-          <ArtisanCalendar/>
+          <ArtisanCalendar />
         </TabsContent>
       </div>
     </Tabs>

@@ -61,13 +61,6 @@ const artisanFormSchema = z
     description: z
       .string()
       .min(10, "Description must be at least 10 characters"),
-    experience: z.enum(["APPRENTICE", "CRAFTMAN", "MASTER", "GRANDMASTER"]),
-    education: z.enum(["FORMAL", "NON_FORMAL"]),
-    training: z.enum(["FORMAL", "NON_FORMAL"]),
-    certificate: z.enum(["NONE", "PROFESSIONAL", "TRADE", "WORKSHOP"]),
-    recognition: z.enum(["STATE", "NATIONAL", "INTERNATIONAL"]),
-    craftId: z.string().min(1, "Craft is required"),
-    subCraftId: z.string().min(1, "SubCraft is required"),
     dp: z.string().min(1, "Profile picture is required"),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -100,41 +93,16 @@ const FormSection = ({
   </div>
 );
 
-export const ArtisanForm = () => {
+export const SafariForm = () => {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
   const form = useForm<ArtisanFormInput>({
     resolver: zodResolver(artisanFormSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      confirmPassword: "",
-      firstName: "",
-      lastName: "",
-      address: "",
-      description: "",
-      experience: "APPRENTICE",
-      education: "NON_FORMAL",
-      training: "NON_FORMAL",
-      certificate: "NONE",
-      recognition: "STATE",
-      craftId: "",
-      subCraftId: "",
-      dp: "",
-    },
   });
 
-  const [crafts] = api.craft.getAllCrafts.useSuspenseQuery();
-  const subcrafts = api.craft.getSubCraftsByCraftId.useQuery(
-    { craftId: form.watch("craftId") },
-    {
-      enabled: !!form.watch("craftId"),
-    },
-  );
-
-  const createArtisan = api.register.createArtisan.useMutation({
+  const createArtisan = api.register.createSafari.useMutation({
     onSuccess: () => {
       toast({
         title: "Success",
@@ -157,13 +125,6 @@ export const ArtisanForm = () => {
       lastName: data.lastName,
       address: data.address,
       description: data.description,
-      experience: data.experience,
-      education: data.education,
-      training: data.training,
-      certificate: data.certificate,
-      recognition: data.recognition,
-      craftId: data.craftId,
-      subCraftId: data.subCraftId,
       email:data.email,
       password:data.password,
       dp: data.dp,
@@ -188,7 +149,7 @@ export const ArtisanForm = () => {
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John" {...field} className="w-full" />
+                    <Input placeholder="John" {...field} value={field.value ??''} className="w-full" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -202,7 +163,7 @@ export const ArtisanForm = () => {
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Doe" {...field} className="w-full" />
+                    <Input placeholder="Doe" {...field} value={field.value ??''} className="w-full" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -219,7 +180,7 @@ export const ArtisanForm = () => {
                     <Input
                       type="email"
                       placeholder="your.email@example.com"
-                      {...field}
+                      {...field} value={field.value ??''}
                     />
                   </FormControl>
                   <FormMessage />
@@ -237,7 +198,7 @@ export const ArtisanForm = () => {
                       <Input
                         type={showPassword ? "text" : "password"}
                         placeholder="Enter password"
-                        {...field}
+                        {...field} value={field.value ??''}
                       />
                       <Button
                         type="button"
@@ -258,6 +219,7 @@ export const ArtisanForm = () => {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="confirmPassword"
@@ -269,7 +231,7 @@ export const ArtisanForm = () => {
                       <Input
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="Confirm password"
-                        {...field}
+                        {...field} value={field.value ??''}
                       />
                       <Button
                         type="button"
@@ -340,7 +302,7 @@ export const ArtisanForm = () => {
               <FormItem>
                 <FormLabel>Address</FormLabel>
                 <FormControl>
-                  <Input placeholder="123 Craft Street" {...field} />
+                  <Input placeholder="123 Craft Street" {...field} value={field.value ??''} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -360,7 +322,7 @@ export const ArtisanForm = () => {
                   <Textarea
                     placeholder="Tell us about your craft journey, specialties, and achievements..."
                     className="min-h-[120px]"
-                    {...field}
+                    {...field} value={field.value ??''}
                   />
                 </FormControl>
                 <FormMessage />
@@ -371,226 +333,6 @@ export const ArtisanForm = () => {
 
         <Separator className="my-6" />
 
-        <FormSection
-          title="Craft Expertise"
-          description="Select your craft category and specialization"
-          icon={<Book className="h-5 w-5 text-purple-500" />}
-        >
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="craftId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Craft Category</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select craft category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {crafts.map((craft) => (
-                        <SelectItem key={craft.craftId} value={craft.craftId}>
-                          {craft.craftName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="subCraftId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Specialization</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select specialization" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {subcrafts.data?.map((subcraft) => (
-                        <SelectItem
-                          key={subcraft.subCraftId}
-                          value={subcraft.subCraftId}
-                        >
-                          {subcraft.subCraftName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </FormSection>
-
-        <Separator className="my-6" />
-
-        <FormSection
-          title="Qualifications"
-          description="Your education and certification details"
-          icon={<Scroll className="h-5 w-5 text-amber-500" />}
-        >
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <FormField
-              control={form.control}
-              name="education"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Education Type</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select education" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="FORMAL">Formal</SelectItem>
-                      <SelectItem value="NON_FORMAL">Non-Formal</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="training"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Training Background</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select training" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="FORMAL">Formal</SelectItem>
-                      <SelectItem value="NON_FORMAL">Non-Formal</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="certificate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Certification</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select certificate" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="NONE">None</SelectItem>
-                      <SelectItem value="PROFESSIONAL">Professional</SelectItem>
-                      <SelectItem value="TRADE">Trade</SelectItem>
-                      <SelectItem value="WORKSHOP">Workshop</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </FormSection>
-
-        <Separator className="my-6" />
-
-        <FormSection
-          title="Experience & Recognition"
-          description="Your skill level and achievements"
-          icon={<Award className="h-5 w-5 text-rose-500" />}
-        >
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="experience"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Experience Level</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select level" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="APPRENTICE">Apprentice</SelectItem>
-                      <SelectItem value="CRAFTMAN">Craftsman</SelectItem>
-                      <SelectItem value="MASTER">Master</SelectItem>
-                      <SelectItem value="GRANDMASTER">Grandmaster</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="recognition"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Recognition Level</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select recognition" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="STATE">State</SelectItem>
-                      <SelectItem value="NATIONAL">National</SelectItem>
-                      <SelectItem value="INTERNATIONAL">
-                        International
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </FormSection>
-
-        <Separator className="my-6" />
 
         <Button
           type="submit"

@@ -60,6 +60,18 @@ type PortfolioProps = {
   images:string[]
 }
 
+type ArtisanPackageProps = {
+  packageId: string;
+  duration: number;
+  features: string[];
+  experience: string;
+  price: number;
+  title: string;
+  artisanId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 type ArtisanPortolioProps = {
   artisanId: string
   firstName: string,
@@ -77,4 +89,5 @@ type ArtisanPortolioProps = {
   subCraft: SubCraftProps
   craft: CraftProps
   Portfolio:PortfolioProps
+  ArtisanPackage: ArtisanPackageProps[]
 }

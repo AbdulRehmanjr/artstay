@@ -14,21 +14,14 @@ export default function JoinPage() {
             className="group relative col-span-3 grid cursor-pointer place-content-center place-items-center gap-4 overflow-hidden rounded-lg border p-4 xl:col-span-1"
             key={index}
           >
-            {/* Left to Right overlay */}
             <div className="absolute left-0 top-0 z-[-1] h-full w-0 bg-primary/50 transition-all duration-1000 ease-in-out group-hover:w-full" />
-
-            {/* Right to Left overlay */}
             <div className="absolute right-0 top-0 z-[-2] h-full w-0 bg-primary/50 transition-all duration-1000 ease-in-out group-hover:w-full" />
-
-            {/* Content with hover transitions */}
             <h4 className="duration-800 max-w-[13rem] text-center font-heading text-xl font-extrabold text-primary transition-colors group-hover:text-white">
               {card.title}
             </h4>
-
             <p className="duration-800 max-w-xs text-center font-text transition-colors group-hover:text-white">
               {card.description}
             </p>
-
             <div className="flex gap-4">
               <Button
                 variant="outline"

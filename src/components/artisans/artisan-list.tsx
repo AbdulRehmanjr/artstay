@@ -11,8 +11,8 @@ export const ArtisanList = () => {
   const router = useRouter();
   const { ref, entry } = useIntersection({
     root: null,
-    threshold: 0.1, // Changed from 1 to 0.1 for earlier detection
-    rootMargin: "100px", // Add rootMargin to trigger fetch before reaching the bottom
+    threshold: 0.1, 
+    rootMargin: "100px", 
   });
 
   const [artisansData, { fetchNextPage, hasNextPage, isFetchingNextPage }] =
