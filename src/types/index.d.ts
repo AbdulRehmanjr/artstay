@@ -91,3 +91,50 @@ type ArtisanPortolioProps = {
   Portfolio:PortfolioProps
   ArtisanPackage: ArtisanPackageProps[]
 }
+
+
+type SafariProps = {
+  safariId: string
+  firstName: string
+  lastName: string
+  dp: string
+  address: string
+  description: string
+  accountId: string
+}
+
+type SafariPaginationProps = {
+  safaris: SafariProps[]
+  metadata: {
+    cursor?: string;
+    hasNextPage: boolean;
+    totalItems?: number;
+    currentPage?: number;
+    totalPages?: number;
+  }
+}
+
+type SafariTourProps = {
+  tourId: string
+  title: string
+  operator: string
+  description: string
+  duration: string
+  features: string[]
+  fee: number
+  safariId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+
+type SafariDetailProps = {
+  safariId: string
+  firstName: string
+  lastName: string
+  dp: string
+  address: string
+  description: string
+  accountId: string
+  SafariTour : SafariTourProps[]
+}

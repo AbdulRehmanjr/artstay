@@ -13,7 +13,6 @@ import {
   FaTwitter,
 } from "react-icons/fa6";
 import { Button } from "~/components/ui/button";
-
 import { cn } from "~/lib/utils";
 
 interface HeaderProps {
@@ -34,15 +33,15 @@ function getLinkProps(href: string, disabled?: boolean, baseClass?: string) {
 const links = [
   { href: "/", title: "Home" },
   { href: "/artisan", title: "Artisan Retreat" },
-  { href: "/", title: "Craft Safari" },
+  { href: "/safari", title: "Craft Safari" },
   { href: "/", title: "Craft Fair" },
-  { href: "/", title: "Craft Shop" },
+  { href: "/", title: "Artisan Store" },
   { href: "/", title: "Visual Storyteller" },
-  { href: "/", title: "Accomodation" },
-  { href: "/", title: "Heritage Dining" },
+  { href: "/", title: "Eco Retreat" },
+  { href: "/", title: "Heritage Cuisine" },
   { href: "/", title: "Eco Transit" },
-  { href: "/", title: "Tour Coordinator" },
-  { href: "/", title: "Linguistic Consultant" },
+  { href: "/", title: "Travel Planner" },
+  { href: "/", title: "Language Services" },
 ];
 
 export const Header: FC<HeaderProps> = ({ disabled = false }) => {
