@@ -1,10 +1,8 @@
-import { Checkbox } from "@radix-ui/react-checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { api } from "~/trpc/server";
 import Image from "next/image";
 import {
   Trophy,
-  Award,
   MapPin,
   Star,
   GraduationCap,
@@ -12,8 +10,6 @@ import {
   Clock,
   Medal,
   Scroll,
-  Expand,
-  Eye,
 } from "lucide-react";
 import {
   getCertificateString,

@@ -20,7 +20,6 @@ import {
 } from "~/components/ui/select";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
-import { Card } from "~/components/ui/card";
 import { useToast } from "~/hooks/use-toast";
 import { z } from "zod";
 import { UploadButton } from "~/utils/uploadthing";

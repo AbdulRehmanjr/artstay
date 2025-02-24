@@ -6,10 +6,8 @@ import { useEffect, useMemo } from "react";
 import Image from "next/image";
 import { Badge } from "~/components/ui/badge";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "~/components/ui/card";
-import { MapPin, ArrowRight } from "lucide-react";
-import { Button } from "~/components/ui/button";
-import Link from "next/link";
+import { Card } from "~/components/ui/card";
+import { MapPin } from "lucide-react";
 
 export const SafariList = () => {
   const router = useRouter();

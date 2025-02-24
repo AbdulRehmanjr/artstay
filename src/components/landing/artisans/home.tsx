@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Banner } from "~/components/common/banner";
 import { CenterSection } from "~/components/common/center-section";
+import { ArtsayComingSoon } from "~/components/common/coming-soon";
 import { ArtisanForm } from "~/components/landing/artisans/form";
 import { landingBanner } from "~/constants/banner";
 import { ArtisanCardData } from "~/constants/card";
@@ -10,6 +11,9 @@ export const ArtisanLanding = () => {
     <>
       <Banner banner={landingBanner} />
       <CenterSection className="grid grid-cols-2 gap-10 p-6">
+        <div className="col-span-2">
+          <ArtsayComingSoon />
+        </div>
         <ArtisanForm />
         <div className="col-span-2 grid place-content-end gap-3 lg:col-span-1">
           <h2 className="font-heading text-4xl font-extrabold text-secondary">
@@ -20,12 +24,12 @@ export const ArtisanLanding = () => {
             Kashmir artisans.
           </h3>
           <p className="font-text">
-            Kashmir, referred to as the "Mecca of Artisans," is celebrated for
+            Kashmir, referred to as the &quots;Mecca of Artisans,&quots; is celebrated for
             its unparalleled craftsmanship and the exquisite artistry of its
             traditional crafts. Where tradition meets timeless elegance and
             important Silk route historical connection. Designated as a part of
-            the UNESCO Creative Cities Network under the category of "Crafts and
-            Folk Art." Also recognized as a ‘World Crafts City’ by the World
+            the UNESCO Creative Cities Network under the category of &quots;Crafts and
+            Folk Art.&quots; Also recognized as a ‘World Crafts City’ by the World
             Craft Council (WCC). 3,50,000 Kashmiri artisans have garnered global
             recognition due to their exceptional skill, dedication to
             traditional craftsmanship, and the unique qualities of their

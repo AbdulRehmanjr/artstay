@@ -23,9 +23,9 @@ export const SafariLanding = () => {
             Kashmir Craft Safaria is an immersive initiative designed to
             celebrate and preserve the rich cultural heritage of Kashmiri
             crafts. Kashmir Craft Safaria aims to create a sustainable and
-            impactful tourism experience that not only enriches the visitors'
+            impactful tourism experience that not only enriches the visitors&apos;
             understanding of Kashmiri culture but also empowers local artisans
-            and contributes to the preservation of Kashmir's rich craft
+            and contributes to the preservation of Kashmir&apos;s rich craft
             heritage. Educate visitors about the history, techniques, and
             significance of Kashmiri crafts. Enhanced tourism appeal, cultural
             heritage preservation, and economic benefits.

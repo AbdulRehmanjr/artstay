@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { CenterSection } from "~/components/common/center-section";
-import { BusinessCardData, FairCardData } from "~/constants/card";
+import { BusinessCardData } from "~/constants/card";
 import { Banner } from "~/components/common/banner";
 import { businessBanner } from "~/constants/banner";
 import { BusinessForm } from "~/components/landing/business/form";

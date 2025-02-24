@@ -11,28 +11,17 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
-import { Card } from "~/components/ui/card";
 import { useToast } from "~/hooks/use-toast";
 import { z } from "zod";
 import { UploadButton } from "~/utils/uploadthing";
 import { api } from "~/trpc/react";
 import {
-  Award,
-  Book,
   Eye,
   EyeOff,
   Loader,
   MapPin,
-  Scroll,
   User,
 } from "lucide-react";
 import { Separator } from "~/components/ui/separator";

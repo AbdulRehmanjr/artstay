@@ -99,7 +99,7 @@ export const ArtisanForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-gray-600">
-                  Select the craft you're interested in*
+                  Select the craft you&apos;re interested in*
                 </FormLabel>
                 <Select
                   onValueChange={field.onChange}
@@ -125,7 +125,7 @@ export const ArtisanForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-gray-600">
-                  Select the sub craft you're interested in*
+                  Select the sub craft you&apos;re interested in*
                 </FormLabel>
                 <Select
                   onValueChange={field.onChange}

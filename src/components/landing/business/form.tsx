@@ -8,7 +8,6 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Button } from "~/components/ui/button";
-import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,29 +20,6 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 
-const destinations = [
-  {
-    id: "khanqah",
-    label: "Khanqah & Zadibal",
-    description: "woodwork, papier-mache sozn embroidery",
-  },
-  {
-    id: "safakadal",
-    label: "Safakadal & Eidgah",
-    description:
-      "chain-stitch embroidery, pashmina weavers, woodcarvers. aari embroidery.",
-  },
-  {
-    id: "raniwari",
-    label: "Raniwari, Kathi Darwaza, & Aali Kadal",
-    description: "Pottery, Walnut Woodcarvings, Pashmina dyeing.",
-  },
-  {
-    id: "nallah",
-    label: "Nallah Mar & Amda Kadal",
-    description: "Zari Embroidery and Namdhakari, Copperware and Silverware.",
-  },
-];
 
 const formSchema = z.object({
   carft: z.string().min(1, "Please select a craft"),

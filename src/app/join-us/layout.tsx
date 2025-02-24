@@ -23,7 +23,7 @@ export default function JoinLayout({
           <div className="grid place-items-center gap-8">
             <div className="space-y-2">
               <p className="font-text font-extrabold text-secondary">
-                Largest Shared Vision Kashmir's Handicraft-Tourism Convergence
+                Largest Shared Vision Kashmir&apos;s Handicraft-Tourism Convergence
                 Program
               </p>
               <h1 className="max-w-lg text-center font-heading text-3xl font-extrabold text-primary">
@@ -31,7 +31,7 @@ export default function JoinLayout({
               </h1>
             </div>
             <p className="font-text text-gray-800">
-              Uniting Craftsmanship and Tourism for Kashmir's Cultural
+              Uniting Craftsmanship and Tourism for Kashmir&apos;s Cultural
               Renaissance.
             </p>
           </div>

@@ -5,8 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, type FC } from "react";
 import {
-  FaBars,
-  FaChevronRight,
   FaFacebook,
   FaLinkedin,
   FaSignal,
@@ -69,7 +67,7 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
         <div className="mx-auto flex justify-between">
           <div className="flex items-center gap-1 font-text xl:gap-3 2xl:gap-12">
             <p className="font-bold">
-              DE KOSHUR CRAFTS' - Kashmir Craft & Tourism Convergence initiative
+              DE KOSHUR CRAFTS&apos; - Kashmir Craft & Tourism Convergence initiative
             </p>
             <div className="flex items-center gap-2">
               <div className="flex gap-2">
@@ -164,10 +162,10 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
                 <li key={index}>
                   <Button
                     variant="link"
-                    className={cn("text-xl", isScrolled && "text-white")}
+                    className={cn("", isScrolled && "text-white")}
                     asChild
                   >
-                    <Link href={link.href}>{link.title}</Link>
+                    <Link href={"#"}>{link.title}</Link>
                   </Button>
                 </li>
               ))}
