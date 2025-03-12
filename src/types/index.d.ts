@@ -127,7 +127,6 @@ type SafariTourProps = {
   updatedAt: Date
 }
 
-
 type SafariDetailProps = {
   safariId: string
   firstName: string
@@ -137,4 +136,53 @@ type SafariDetailProps = {
   description: string
   accountId: string
   SafariTour : SafariTourProps[]
+}
+
+type FairProps = {
+  fairId: string
+  firstName: string
+  lastName: string
+  dp: string
+  address: string
+  description: string
+  accountId: string
+}
+
+type FairPaginationProps = {
+  fairs: FairProps[]
+  metadata: {
+    cursor?: string;
+    hasNextPage: boolean;
+    totalItems?: number;
+    currentPage?: number;
+    totalPages?: number;
+  }
+}
+
+type FairEventProps = {
+  eventId: string
+  title: string
+  location: FairLocationEnum
+  vanue: string
+  startDate: string
+  endDate: string
+  organizer: string
+  fairType: FairTypeEnum
+  latitude: number
+  longitude: number
+  description: string
+  fairId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+type FairDetailProps = {
+  fairId: string
+  firstName: string
+  lastName: string
+  dp: string
+  address: string
+  description: string
+  accountId: string
+  FairEvent : FairEventProps[]
 }

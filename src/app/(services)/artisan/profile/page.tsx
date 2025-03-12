@@ -45,7 +45,7 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
               fill
               sizes="100%"
             />
-            <div className="absolute bottom-0 left-0 right-0 h-[4rem] bg-gradient-to-t from-[#9a5d33] to-transparent p-4">
+            <div className="absolute bottom-0 left-0 right-0 h-[4rem] bg-gradient-to-t from-[#0088cc] to-transparent p-4">
               <h2 className="text-center text-3xl font-semibold text-white">
                 {artisan.firstName} {artisan.lastName}
               </h2>
@@ -99,7 +99,7 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
                       Craft Specialization
                     </span>
                     <div className="flex items-center gap-2">
-                      <Trophy className="h-5 w-5 text-yellow-400" />
+                      <Trophy className="h-5 w-5 text-white" />
                       <span className="text-base font-medium">
                         {artisan.craft.craftName} |{" "}
                         {artisan.subCraft.subCraftName}
@@ -112,7 +112,7 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
                       Education Type
                     </span>
                     <div className="flex items-center gap-2">
-                      <GraduationCap className="h-5 w-5 text-blue-400" />
+                      <GraduationCap className="h-5 w-5 text-white" />
                       <span className="text-base font-medium">
                         {getEducationString(
                           artisan.training as TraingEducationEnum,
@@ -125,7 +125,7 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
                       Training Background
                     </span>
                     <div className="flex items-center gap-2">
-                      <BookOpen className="h-5 w-5 text-green-400" />
+                      <BookOpen className="h-5 w-5 text-white" />
                       <span className="text-base font-medium">
                         {getTrainingString(
                           artisan.training as TraingEducationEnum,
@@ -141,7 +141,7 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
                     Experience Level
                   </span>
                   <div className="flex items-center gap-2">
-                    <Clock className="h-5 w-5 text-purple-400" />
+                    <Clock className="h-5 w-5 text-white" />
                     <span className="text-base font-medium">
                       {getExperienceString(
                         artisan.experience as ExperienceEnum,
@@ -152,7 +152,7 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
                 <div className="flex flex-col gap-1 border-l border-white/20 pl-8">
                   <span className="text-xs text-white/70">Certification</span>
                   <div className="flex items-center gap-2">
-                    <Scroll className="h-5 w-5 text-orange-400" />
+                    <Scroll className="h-5 w-5 text-white" />
                     <span className="text-base font-medium">
                       {getCertificateString(
                         artisan.experience as CertificationEnum,
@@ -166,7 +166,7 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
                     Recognition Level
                   </span>
                   <div className="flex items-center gap-2">
-                    <Medal className="h-5 w-5 text-red-400" />
+                    <Medal className="h-5 w-5 text-white" />
                     <span className="text-base font-medium">
                       {getRecognitionString(
                         artisan.recongnition as RecongnitionEnum,
@@ -186,7 +186,7 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
             <h2 className="border-b border-gray-200 pb-3 text-xl font-semibold text-gray-800">
               Artisan General Information
             </h2>
-            <p className="text-base leading-relaxed text-gray-700">
+            <p className="text-base leading-relaxed text-gray-900">
               {artisan.description ||
                 "Blending traditional and modern techniques"}
             </p>

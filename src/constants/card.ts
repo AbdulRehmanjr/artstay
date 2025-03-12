@@ -116,14 +116,14 @@ export const JoinCard = [
         link: '/join-us/safari'
     },
     {
-        title: 'Craft Event Organizers',
+        title: 'Craft Fair, Exhibition & Event Organizers',
         description: "Craft event organizers unite artisans, locals, and tourists in vibrant celebrations of Kashmiri craft. Your expertise in planning craft fairs and artisan meet-and-greets ensures these gatherings are engaging and successful.",
-        link: '#'
+        link: '/join-us/fair'
     },
     {
         title: 'Kashmir Handicraft Shop Owner',
         description: "Joining the ArtStay Vendor Partnership connects you with culturally curious visitors eager to purchase genuine crafts. This collaboration boosts sales while educating consumers on the rich history and value of each item.",
-        link: '#'
+        link: '/join-us/shop'
     },
     {
         title: 'Handicraft Visual Storyteller',

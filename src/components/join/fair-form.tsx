@@ -27,7 +27,7 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { useState } from "react";
 
-const safariFormSchema = z
+const fairFormSchema = z
   .object({
     firstName: z
       .string()
@@ -50,14 +50,14 @@ const safariFormSchema = z
     description: z
       .string()
       .min(10, "Description must be at least 10 characters"),
-    dp: z.string().min(1, "Profile picture is required"),
+    dp: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });
 
-type SafariInputProps = z.infer<typeof safariFormSchema>;
+type fairInputProps = z.infer<typeof fairFormSchema>;
 
 const FormSection = ({
   title,
@@ -82,20 +82,20 @@ const FormSection = ({
   </div>
 );
 
-export const SafariForm = () => {
+export const FairForm = () => {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
-  const form = useForm<SafariInputProps>({
-    resolver: zodResolver(safariFormSchema),
+  const form = useForm<fairInputProps>({
+    resolver: zodResolver(fairFormSchema),
   });
 
-  const createArtisan = api.register.createSafari.useMutation({
+  const createArtisan = api.register.createFair.useMutation({
     onSuccess: () => {
       toast({
         title: "Success",
-        description: "Safari profile created successfully",
+        description: "Fair profile created successfully.",
       });
       form.reset();
     },
@@ -108,7 +108,7 @@ export const SafariForm = () => {
     },
   });
 
-  const onSubmit = async (data: SafariInputProps) => {
+  const onSubmit = async (data: fairInputProps) => {
     createArtisan.mutate({
       firstName: data.firstName,
       lastName: data.lastName,
@@ -116,7 +116,7 @@ export const SafariForm = () => {
       description: data.description,
       email:data.email,
       password:data.password,
-      dp: data.dp,
+      dp: data.dp ?? '/placeholder.png',
     });
   };
 

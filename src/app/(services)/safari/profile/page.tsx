@@ -151,10 +151,10 @@ export default async function SafariPage({ searchParams }: PageProps) {
                 <div className="flex-1">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900">
+                      <h3 className="font-heading text-xl font-semibold text-secondary">
                         {tour.title}
                       </h3>
-                      <p className="text-sm text-gray-500">{tour.operator}</p>
+                      <p className="text-sm text-gray-500 font-text">{tour.operator}</p>
                     </div>
                     <Badge className="bg-primary/10 text-primary">
                       {tour.duration}
@@ -163,10 +163,11 @@ export default async function SafariPage({ searchParams }: PageProps) {
 
                   <p className="text-gray-600 mb-6">{tour.description}</p>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-4">
+                    <p className="font-heading text-secondary text-lg">Features </p>
                     {tour.features.map((feature, index) => (
                       <div key={index} className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-green-500" />
+                        <CheckCircle2 className="h-4 w-4 text-secondary" />
                         <span className="text-sm text-gray-600">{feature}</span>
                       </div>
                     ))}

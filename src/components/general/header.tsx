@@ -4,12 +4,7 @@ import { LogIn } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, type FC } from "react";
-import {
-  FaFacebook,
-  FaLinkedin,
-  FaSignal,
-  FaTwitter,
-} from "react-icons/fa6";
+import { FaFacebook, FaLinkedin, FaSignal, FaTwitter } from "react-icons/fa6";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 
@@ -30,20 +25,20 @@ function getLinkProps(href: string, disabled?: boolean, baseClass?: string) {
 
 const links = [
   { href: "/", title: "Home" },
-  { href: "/artisan", title: "Artisan Retreat" },
+  { href: "/artisan", title: "Craft School" },
   { href: "/safari", title: "Craft Safari" },
-  { href: "/", title: "Craft Fair" },
-  { href: "/", title: "Artisan Store" },
-  { href: "/", title: "Visual Storyteller" },
+  { href: "/fair", title: "Craft Fair" },
+  { href: "/", title: "Craft Store" },
+  { href: "/", title: "Craft Documenter" },
   { href: "/", title: "Eco Retreat" },
-  { href: "/", title: "Heritage Cuisine" },
+  { href: "/", title: "Dining Voyage" },
   { href: "/", title: "Eco Transit" },
   { href: "/", title: "Travel Planner" },
   { href: "/", title: "Language Services" },
 ];
 
 export const Header: FC<HeaderProps> = ({ disabled = false }) => {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,15 +54,21 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
   return (
     <header
       className={cn(
-        "sticky top-0 z-[103] flex w-full flex-col bg-white text-primary transition-colors duration-300",
+        "sticky top-0 z-[103] flex w-full flex-col bg-secondary text-white transition-colors duration-300",
         isScrolled && "bg-primary",
       )}
     >
-      <div className="hidden gap-6 bg-primary p-6 py-2 text-white lg:flex">
+      <div
+        className={cn(
+          "hidden gap-6 bg-primary p-6 py-2 text-white lg:flex",
+          isScrolled && "lg:hidden",
+        )}
+      >
         <div className="mx-auto flex justify-between">
           <div className="flex items-center gap-1 font-text xl:gap-3 2xl:gap-12">
             <p className="font-bold">
-              DE KOSHUR CRAFTS&apos; - Kashmir Craft & Tourism Convergence initiative
+              DE KOSHUR CRAFTS&apos; - Kashmir Craft & Tourism Convergence
+              initiative
             </p>
             <div className="flex items-center gap-2">
               <div className="flex gap-2">
@@ -148,7 +149,7 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
       <div className="mx-auto flex justify-between p-4">
         <div className="relative ml-6 h-[30px] w-[100px] md:ml-0 xl:h-[50px] xl:w-[100px]">
           <Image
-            src={isScrolled ? "/logo/logo_2.png" : "/logo/logo_1.png"}
+            src="/logo/logo_2.png"
             alt="logo for artstay"
             fill
             sizes="100%"
@@ -162,10 +163,13 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
                 <li key={index}>
                   <Button
                     variant="link"
-                    className={cn("", isScrolled && "text-white")}
+                    className={cn(
+                      "text-lg text-white",
+                      isScrolled && "text-white",
+                    )}
                     asChild
                   >
-                    <Link href={"#"}>{link.title}</Link>
+                    <Link href={link.href}>{link.title}</Link>
                   </Button>
                 </li>
               ))}
