@@ -10,7 +10,7 @@ export const ourFileRouter = {
       maxFileCount: 1,
     },
   })
-    .onUploadComplete(async ({ metadata, file }) => {
+    .onUploadComplete(async ({ file }) => {
       console.log("file url", file.url);
       return { uploadedBy: 'Someone'};
     }),

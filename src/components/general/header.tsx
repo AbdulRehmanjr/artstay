@@ -28,7 +28,7 @@ const links = [
   { href: "/artisan", title: "Craft School" },
   { href: "/safari", title: "Craft Safari" },
   { href: "/fair", title: "Craft Fair" },
-  { href: "/", title: "Craft Store" },
+  { href: "/shop", title: "Craft Store" },
   { href: "/", title: "Craft Documenter" },
   { href: "/", title: "Eco Retreat" },
   { href: "/", title: "Dining Voyage" },
