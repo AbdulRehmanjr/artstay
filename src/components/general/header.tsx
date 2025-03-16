@@ -169,7 +169,7 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
                     )}
                     asChild
                   >
-                    <Link href={link.href}>{link.title}</Link>
+                    <Link href={disabled ? '#':link.href}>{link.title}</Link>
                   </Button>
                 </li>
               ))}
