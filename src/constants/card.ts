@@ -126,6 +126,11 @@ export const JoinCard = [
         link: '/join-us/shop'
     },
     {
+        title: 'Dining Voyage',
+        description: "Embark on a culinary journey through Kashmir's rich gastronomic heritage. Our Dining Voyage connects you with authentic flavors, traditional cooking methods, and the stories behind each dish. From royal Wazwan feasts to intimate family recipes, experience the heart of Kashmiri culture through its distinctive cuisine.",
+        link: '/join-us/dining'
+    },
+    {
         title: 'Handicraft Visual Storyteller',
         description: "Visual storytellers capture Kashmir’s handicrafts through stunning photography, videography, and aerial footage for tourists. Your work showcases the essence of Kashmir’s artisan heritage, inspiring a global audience and elevating crafts.",
         link: '#'
