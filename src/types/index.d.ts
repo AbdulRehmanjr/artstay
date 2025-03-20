@@ -235,8 +235,6 @@ type ShopPaginationProps = {
   }
 }
 
-
-
 type ShopDetailProps = {
   shopId : string
   accountId: string
@@ -292,4 +290,59 @@ type ProductProps = {
   shopId: string
   createdAt: Date
   updatedAt: Date
+}
+
+type RestaurantProps = {
+  restaurantId: string
+  accountId: string
+  name: string
+  description: string
+  location: string
+  cuisine: string[]
+  priceRange: string
+  image: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+type RestaurantPaginationProps = {
+  dinings: RestaurantProps[]
+  metadata: {
+    cursor?: string;
+    hasNextPage: boolean;
+    totalItems?: number;
+    currentPage?: number;
+    totalPages?: number;
+  }
+}
+
+type MenuCategory = "STARTER" | "MAIN_COURSE" | "DESSERT" | "BEVERAGE"
+
+type RestaurantMenuProps = {
+  menuItemId: string
+  name: string
+  description: string
+  price: number
+  image: string
+  category: MenuCategory
+  isVegetarian: boolean
+  isVegan: boolean
+  isGlutenFree: boolean
+  spicyLevel: number
+  restaurantId: string
+  createdAt: Date
+  updatedAt: Date
+} 
+
+type RestaurantDetailProps = {
+  restaurantId: string
+  name: string
+  description: string
+  location: string
+  cuisine: string[] 
+  priceRange: string
+  image: string
+  createdAt: Date
+  updatedAt: Date
+  menu: RestaurantMenuProps[]
 }

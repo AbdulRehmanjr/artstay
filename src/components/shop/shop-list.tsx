@@ -10,35 +10,16 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { 
   MapPin, 
-  Store, 
   Clock, 
   Tag, 
   ShoppingBag, 
   Package, 
-  Search, 
-  ChevronDown, 
-  Truck, 
+  Truck,  
   Star, 
-  Filter
 } from "lucide-react";
 import dayjs from "dayjs";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
-import { Input } from "~/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
 
-// Product categories from the registration form
+
 const PRODUCT_CATEGORIES = [
   { id: "pashmina", label: "Pashmina & Woolen Products" },
   { id: "embroidery", label: "Embroidery & Textiles" },
@@ -52,7 +33,6 @@ const PRODUCT_CATEGORIES = [
   { id: "leather", label: "Leather Goods" },
 ];
 
-// Helper function to get category label by id
 const getCategoryLabel = (categoryId: string): string => {
   if (categoryId.startsWith("other: ")) {
     return categoryId.substring(7);
@@ -112,10 +92,6 @@ export const ShopList = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold text-gray-900">ArtStay Marketplace</h1>
-        <p className="text-lg text-gray-600">Discover authentic Kashmiri handicrafts from our verified vendors</p>
-      </div>
       
       {/* Search and Filters */}
       {/* <div className="mb-8 space-y-4">
