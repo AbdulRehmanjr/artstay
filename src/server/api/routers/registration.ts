@@ -236,4 +236,47 @@ export const registerRouter = createTRPCRouter({
             }
         }),
 
+
+    createTravelPlaner: publicProcedure
+        .input(z.object({
+            name: z.string(),
+            description: z.string(),
+            location: z.string(),
+            priceRange: z.string(),
+            language: z.array(z.string()),
+            speciality: z.array(z.string()),
+            email: z.string().email(),
+            password: z.string(),
+            dp: z.string(),
+        }))
+        .mutation(async ({ input }) => {
+            try {
+                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/api/v1/register/travel`, { ...input });
+
+            } catch (error) {
+                if (error instanceof TRPCClientError) {
+                    console.error(error.message);
+                    throw new TRPCError({
+                        message: error.message,
+                        code: 'NOT_FOUND'
+                    });
+                }
+                else if (error instanceof AxiosError) {
+                    const axiosError = error as AxiosError<{ errors: string[] }>;
+                    console.error(axiosError.response?.data.errors);
+                    throw new TRPCError({
+                        message: Array.isArray((error.response?.data as { errors: string[] }).errors) &&
+                            typeof (error.response?.data as { errors: string[] }).errors[0] === 'string' ?
+                            (error.response?.data as { errors: string[] }).errors[0] : 'Unknown error',
+                        code: 'BAD_REQUEST'
+                    });
+                }
+                console.error(error);
+                throw new TRPCError({
+                    message: 'Something went wrong',
+                    code: 'INTERNAL_SERVER_ERROR'
+                });
+            }
+        }),
+
 })
