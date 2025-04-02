@@ -1,3 +1,4 @@
+import "@uploadthing/react/styles.css";
 import "~/styles/globals.css";
 
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
@@ -34,10 +35,10 @@ export default function RootLayout({
     <html lang="en" className={`${roboto.variable} ${poppin.variable}`}>
       <body>
         <TRPCReactProvider>
-        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
-          <Header disabled/>
+          <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+          <Header />
           <main>{children}</main>
-          <Toaster/>
+          <Toaster />
         </TRPCReactProvider>
         <ScrollToTop />
       </body>

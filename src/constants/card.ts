@@ -111,7 +111,7 @@ export const JoinCard = [
         link: '/join-us/artisan'
     },
     {
-        title: 'Kashmir Travel Agent',
+        title: 'Kashmir Safari Agent',
         description: "By collaborating with ArtStay, you can offer specialized packages that blend handicraft tourism. This partnership enhances your offerings and attracts tourists seeking more than sightseeing—a true cultural immersion.",
         link: '/join-us/safari'
     },
@@ -124,6 +124,16 @@ export const JoinCard = [
         title: 'Kashmir Handicraft Shop Owner',
         description: "Joining the ArtStay Vendor Partnership connects you with culturally curious visitors eager to purchase genuine crafts. This collaboration boosts sales while educating consumers on the rich history and value of each item.",
         link: '/join-us/shop'
+    },
+    {
+        title: 'Dining Voyage',
+        description: "Embark on a culinary journey through Kashmir's rich gastronomic heritage. Our Dining Voyage connects you with authentic flavors, traditional cooking methods, and the stories behind each dish. From royal Wazwan feasts to intimate family recipes, experience the heart of Kashmiri culture through its distinctive cuisine.",
+        link: '/join-us/dining'
+    },
+    {
+        title: 'Traveler Planner',
+        description: "Embark on an extraordinary adventure through breathtaking destinations. Our Traveler Planner connects you with authentic travel experiences, traditional routes, and the stories behind each location. From expansive wilderness expeditions to intimate cultural explorations, experience the heart of global wonders through our distinctive guided tours.",
+        link: '/join-us/traveler'
     },
     {
         title: 'Handicraft Visual Storyteller',

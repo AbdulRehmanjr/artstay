@@ -1,6 +1,6 @@
 
 type TraingEducationEnum = 'FORMAL' | 'NON_FORMAL'
-type CertificationEnum  ='NONE' | 'PROFESSIONAL' | 'TRADE' | 'WORKSHOP'
+type CertificationEnum = 'NONE' | 'PROFESSIONAL' | 'TRADE' | 'WORKSHOP'
 type RecongnitionEnum = 'STATE' | 'NATIONAL' | 'INTERNATIONAL'
 type ExperienceEnum = 'APPRENTICE' | 'CRAFTMAN' | 'MASTER' | 'GRANDMASTER'
 type ApiResponseProps<T> = {
@@ -56,8 +56,8 @@ type ArtisanPaginationProps = {
 }
 
 type PortfolioProps = {
-  portfolioId:string
-  images:string[]
+  portfolioId: string
+  images: string[]
 }
 
 type ArtisanPackageProps = {
@@ -88,7 +88,7 @@ type ArtisanPortolioProps = {
   dp: string,
   subCraft: SubCraftProps
   craft: CraftProps
-  Portfolio:PortfolioProps
+  Portfolio: PortfolioProps
   ArtisanPackage: ArtisanPackageProps[]
 }
 
@@ -135,7 +135,7 @@ type SafariDetailProps = {
   address: string
   description: string
   accountId: string
-  SafariTour : SafariTourProps[]
+  SafariTour: SafariTourProps[]
 }
 
 type FairProps = {
@@ -184,11 +184,48 @@ type FairDetailProps = {
   address: string
   description: string
   accountId: string
-  FairEvent : FairEventProps[]
+  FairEvent: FairEventProps[]
 }
 
-type ShopPaginationProps ={
-  shops:ShopProps[]
+type ShopProps = {
+  shopId:string
+  accountId: string
+  businessName: string
+  shopName: string
+  vendorType: string
+  address: string
+  city: string
+  state: string
+  country: string
+  zipCode: string
+  ownerName: string
+  phoneNumber: string
+  website: string
+  description: string
+  productCategories: string[]
+  isGICertified: boolean
+  isHandmade: string
+  pickupOptions: string[]
+  deliveryTime: string
+  deliveryFee: string
+  pricingStructure: string
+  orderProcessing: string
+  paymentMethods: string[]
+  returnPolicy: string
+  stockAvailability: string
+  offersCustomization: boolean
+  packagingType: string
+  shopTiming: string
+  workingDays: string[]
+  agreedToTerms: boolean
+  agreedToBlacklist: boolean
+  dp: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+type ShopPaginationProps = {
+  shops: ShopProps[]
   metadata: {
     cursor?: string;
     hasNextPage: boolean;
@@ -198,16 +235,43 @@ type ShopPaginationProps ={
   }
 }
 
-type ShopProps = {
-  shopId: string
-  shopName: string
-  description: string
+type ShopDetailProps = {
+  shopId : string
   accountId: string
-  dp: string
+  businessName: string
+  shopName: string
+  vendorType: string
   address: string
+  city: string
+  state: string
+  country: string
+  zipCode: string
+  ownerName: string
+  phoneNumber: string
+  website: string
+  description: string
+  productCategories: string[]
+  isGICertified: boolean
+  isHandmade: string
+  pickupOptions: string[]
+  deliveryTime: string
+  deliveryFee: string
+  pricingStructure: string
+  orderProcessing: string
+  paymentMethods: string[]
+  returnPolicy: string
+  stockAvailability: string
+  offersCustomization: boolean
+  packagingType: string
+  shopTiming: string
+  workingDays: string[]
+  agreedToTerms: boolean
+  agreedToBlacklist: boolean
+  dp: string
   createdAt: Date
   updatedAt: Date
-  }
+  products: ProductProps[]
+}
 
 type ProductProps = {
   productId: string
@@ -228,15 +292,57 @@ type ProductProps = {
   updatedAt: Date
 }
 
-type ShopDetailProps = {
-  shopId: string
-  shopName: string
-  description: string
+type RestaurantProps = {
+  restaurantId: string
   accountId: string
-  dp: string
-  address: string
+  name: string
+  description: string
+  location: string
+  cuisine: string[]
+  priceRange: string
+  image: string
   createdAt: Date
   updatedAt: Date
-  products: ProductProps[]
 }
 
+type RestaurantPaginationProps = {
+  dinings: RestaurantProps[]
+  metadata: {
+    cursor?: string;
+    hasNextPage: boolean;
+    totalItems?: number;
+    currentPage?: number;
+    totalPages?: number;
+  }
+}
+
+type MenuCategory = "STARTER" | "MAIN_COURSE" | "DESSERT" | "BEVERAGE"
+
+type RestaurantMenuProps = {
+  menuItemId: string
+  name: string
+  description: string
+  price: number
+  image: string
+  category: MenuCategory
+  isVegetarian: boolean
+  isVegan: boolean
+  isGlutenFree: boolean
+  spicyLevel: number
+  restaurantId: string
+  createdAt: Date
+  updatedAt: Date
+} 
+
+type RestaurantDetailProps = {
+  restaurantId: string
+  name: string
+  description: string
+  location: string
+  cuisine: string[] 
+  priceRange: string
+  image: string
+  createdAt: Date
+  updatedAt: Date
+  menu: RestaurantMenuProps[]
+}

@@ -31,9 +31,9 @@ const links = [
   { href: "/shop", title: "Craft Store" },
   { href: "/", title: "Craft Documenter" },
   { href: "/", title: "Eco Retreat" },
-  { href: "/", title: "Dining Voyage" },
+  { href: "/dining", title: "Dining Voyage" },
   { href: "/", title: "Eco Transit" },
-  { href: "/", title: "Travel Planner" },
+  { href: "/travel", title: "Travel Planner" },
   { href: "/", title: "Language Services" },
 ];
 
@@ -67,8 +67,8 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
         <div className="mx-auto flex justify-between">
           <div className="flex items-center gap-1 font-text xl:gap-3 2xl:gap-12">
             <p className="font-bold">
-              DE KOSHUR CRAFTS&apos; - Kashmir Craft & Tourism Convergence
-              initiative
+              De Koshur Crafts&apos; - Kashmir Craft & Tourism Convergence
+              Marketplace
             </p>
             <div className="flex items-center gap-2">
               <div className="flex gap-2">

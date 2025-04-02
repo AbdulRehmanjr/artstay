@@ -127,45 +127,156 @@ export const registerRouter = createTRPCRouter({
                 })
             }
         }),
-        createShop: publicProcedure
+    createShop: publicProcedure
         .input(z.object({
+            email: z.string().email(),
+            password: z.string(),
+            businessName: z.string(),
             shopName: z.string(),
+            vendorType: z.string(),
             address: z.string(),
+            city: z.string(),
+            state: z.string(),
+            country: z.string(),
+            zipCode: z.string(),
+            ownerName: z.string(),
+            phoneNumber: z.string(),
+            website: z.string(),
             description: z.string(),
+            productCategories: z.array(z.string()),
+            isGICertified: z.boolean(),
+            isHandmade: z.string(),
+            pickupOptions: z.array(z.string()),
+            deliveryTime: z.string(),
+            deliveryFee: z.string(),
+            pricingStructure: z.string(),
+            orderProcessing: z.string(),
+            paymentMethods: z.array(z.string()),
+            returnPolicy: z.string(),
+            stockAvailability: z.string(),
+            offersCustomization: z.boolean(),
+            packagingType: z.string(),
             shopTiming: z.string(),
             workingDays: z.array(z.string()),
+            agreedToTerms: z.boolean(),
+            agreedToBlacklist: z.boolean(),
             dp: z.string(),
-            email: z.string(),
-            password: z.string(),
         }))
-        .mutation(async ({input})=>{
-           try {
-             
-            await axios.post<ApiResponseProps<null>>(`${env.API_URL}/api/v1/register/shop`, { ...input });
-            
-           } catch (error) {
-            if (error instanceof TRPCClientError) {
-                console.error(error.message)
-                throw new TRPCError({
-                    message: error.message,
-                    code: 'NOT_FOUND'
-                })
-            }
-            else if (error instanceof AxiosError) {
-                const axiosError = error as AxiosError<{ errors: string[] }>;
-                console.error(axiosError.response?.data.errors)
-                throw new TRPCError({
-                    message: Array.isArray((error.response?.data as { errors: string[] }).errors) && typeof (error.response?.data as { errors: string[] }).errors[0] === 'string' ? (error.response?.data as { errors: string[] }).errors[0] : 'Unknown error',
-                    code: 'BAD_REQUEST'
-                })
-            }
-            console.error(error)
-            throw new TRPCError({
-                message: 'Something went wrong',
-                code: 'INTERNAL_SERVER_ERROR'
-            })
-           }
-        })
+        .mutation(async ({ input }) => {
+            try {
+                await axios.post<ApiResponseProps<null>>(
+                    `${env.API_URL}/api/v1/register/shop`,
+                    { ...input }
+                );
 
+            } catch (error) {
+                if (error instanceof TRPCClientError) {
+                    console.error(error.message);
+                    throw new TRPCError({
+                        message: error.message,
+                        code: 'NOT_FOUND'
+                    });
+                }
+                else if (error instanceof AxiosError) {
+                    const axiosError = error as AxiosError<{ errors: string[] }>;
+                    console.error(axiosError.response?.data.errors);
+                    throw new TRPCError({
+                        message: Array.isArray((error.response?.data as { errors: string[] }).errors) &&
+                            typeof (error.response?.data as { errors: string[] }).errors[0] === 'string' ?
+                            (error.response?.data as { errors: string[] }).errors[0] : 'Unknown error',
+                        code: 'BAD_REQUEST'
+                    });
+                }
+                console.error(error);
+                throw new TRPCError({
+                    message: 'Something went wrong',
+                    code: 'INTERNAL_SERVER_ERROR'
+                });
+            }
+        }),
+
+    createRestaurant: publicProcedure
+        .input(z.object({
+            email: z.string().email(),
+            password: z.string(),
+            name: z.string(),
+            description: z.string(),
+            location: z.string(),
+            cuisine: z.array(z.string()),
+            priceRange: z.string(),
+            image: z.string(),
+        }))
+        .mutation(async ({ input }) => {
+            try {
+                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/api/v1/register/restaurant`, { ...input });
+
+            } catch (error) {
+                if (error instanceof TRPCClientError) {
+                    console.error(error.message);
+                    throw new TRPCError({
+                        message: error.message,
+                        code: 'NOT_FOUND'
+                    });
+                }
+                else if (error instanceof AxiosError) {
+                    const axiosError = error as AxiosError<{ errors: string[] }>;
+                    console.error(axiosError.response?.data.errors);
+                    throw new TRPCError({
+                        message: Array.isArray((error.response?.data as { errors: string[] }).errors) &&
+                            typeof (error.response?.data as { errors: string[] }).errors[0] === 'string' ?
+                            (error.response?.data as { errors: string[] }).errors[0] : 'Unknown error',
+                        code: 'BAD_REQUEST'
+                    });
+                }
+                console.error(error);
+                throw new TRPCError({
+                    message: 'Something went wrong',
+                    code: 'INTERNAL_SERVER_ERROR'
+                });
+            }
+        }),
+
+
+    createTravelPlaner: publicProcedure
+        .input(z.object({
+            name: z.string(),
+            description: z.string(),
+            location: z.string(),
+            priceRange: z.string(),
+            language: z.array(z.string()),
+            speciality: z.array(z.string()),
+            email: z.string().email(),
+            password: z.string(),
+            dp: z.string(),
+        }))
+        .mutation(async ({ input }) => {
+            try {
+                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/api/v1/register/travel`, { ...input });
+
+            } catch (error) {
+                if (error instanceof TRPCClientError) {
+                    console.error(error.message);
+                    throw new TRPCError({
+                        message: error.message,
+                        code: 'NOT_FOUND'
+                    });
+                }
+                else if (error instanceof AxiosError) {
+                    const axiosError = error as AxiosError<{ errors: string[] }>;
+                    console.error(axiosError.response?.data.errors);
+                    throw new TRPCError({
+                        message: Array.isArray((error.response?.data as { errors: string[] }).errors) &&
+                            typeof (error.response?.data as { errors: string[] }).errors[0] === 'string' ?
+                            (error.response?.data as { errors: string[] }).errors[0] : 'Unknown error',
+                        code: 'BAD_REQUEST'
+                    });
+                }
+                console.error(error);
+                throw new TRPCError({
+                    message: 'Something went wrong',
+                    code: 'INTERNAL_SERVER_ERROR'
+                });
+            }
+        }),
 
 })
