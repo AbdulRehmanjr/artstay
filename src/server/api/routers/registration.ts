@@ -26,7 +26,7 @@ export const registerRouter = createTRPCRouter({
         }))
         .mutation(async ({ input }) => {
             try {
-                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/api/v1/register/artisan`, { ...input });
+                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/register/artisan`, { ...input });
 
             } catch (error) {
                 if (error instanceof TRPCClientError) {
@@ -64,7 +64,7 @@ export const registerRouter = createTRPCRouter({
         }))
         .mutation(async ({ input }) => {
             try {
-                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/api/v1/register/safari`, { ...input });
+                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/register/safari`, { ...input });
 
             } catch (error) {
                 if (error instanceof TRPCClientError) {
@@ -102,7 +102,7 @@ export const registerRouter = createTRPCRouter({
         }))
         .mutation(async ({ input }) => {
             try {
-                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/api/v1/register/fair`, { ...input });
+                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/register/fair`, { ...input });
 
             } catch (error) {
                 if (error instanceof TRPCClientError) {
@@ -165,7 +165,7 @@ export const registerRouter = createTRPCRouter({
         .mutation(async ({ input }) => {
             try {
                 await axios.post<ApiResponseProps<null>>(
-                    `${env.API_URL}/api/v1/register/shop`,
+                    `${env.API_URL}/register/shop`,
                     { ...input }
                 );
 
@@ -208,7 +208,7 @@ export const registerRouter = createTRPCRouter({
         }))
         .mutation(async ({ input }) => {
             try {
-                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/api/v1/register/restaurant`, { ...input });
+                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/register/restaurant`, { ...input });
 
             } catch (error) {
                 if (error instanceof TRPCClientError) {
@@ -251,7 +251,7 @@ export const registerRouter = createTRPCRouter({
         }))
         .mutation(async ({ input }) => {
             try {
-                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/api/v1/register/travel`, { ...input });
+                await axios.post<ApiResponseProps<null>>(`${env.API_URL}/register/travel`, { ...input });
 
             } catch (error) {
                 if (error instanceof TRPCClientError) {

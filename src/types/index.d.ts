@@ -9,6 +9,15 @@ type ApiResponseProps<T> = {
   data: T;
 };
 
+type LoginProps = {
+  token: string,
+  user: {
+    id: string,
+    email: string,
+    accountType: string
+  }
+};
+
 type CraftProps = {
   craftName: string;
   craftSlug: string;
@@ -39,6 +48,7 @@ type ArtisanDetailProps = {
   recongnition: string,
   craftId: string,
   subCraftId: string,
+  isActive: boolean,
   dp: string,
   subCraft: SubCraftProps
   craft: CraftProps
@@ -100,6 +110,7 @@ type SafariProps = {
   dp: string
   address: string
   description: string
+  isActive: boolean
   accountId: string
 }
 

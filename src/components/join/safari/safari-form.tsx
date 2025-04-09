@@ -50,7 +50,7 @@ const safariFormSchema = z
     description: z
       .string()
       .min(10, "Description must be at least 10 characters"),
-    dp: z.string().min(1, "Profile picture is required"),
+    dp: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -116,7 +116,7 @@ export const SafariForm = () => {
       description: data.description,
       email:data.email,
       password:data.password,
-      dp: data.dp,
+      dp: data.dp ?? '/placeholder.png',
     });
   };
 
@@ -325,7 +325,6 @@ export const SafariForm = () => {
 
         <Button
           type="submit"
-          className="w-full"
           disabled={createArtisan.isPending}
         >
           {createArtisan.isPending ? (
