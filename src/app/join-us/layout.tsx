@@ -22,7 +22,7 @@ export default function JoinLayout({
               Join Us
             </h2>
             <p className="mt-4 max-w-2xl text-lg text-white/90">
-              Be part of Kashmir's cultural renaissance
+              Be part of Kashmir&apos;s cultural renaissance
             </p>
           </div>
         </div>
@@ -81,7 +81,7 @@ export default function JoinLayout({
                 <p className="font-text text-gray-700">
                   We invite you to explore this opportunity to expand your
                   reach, collaborate with like-minded professionals, and
-                  contribute to a meaningful cause. Let's work together to
+                  contribute to a meaningful cause. Let&apos;s work together to
                   create memorable experiences that celebrate the craftsmanship
                   and cultural heritage of Kashmir.
                 </p>

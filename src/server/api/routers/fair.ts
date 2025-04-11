@@ -16,7 +16,7 @@ export const fairRouter = createTRPCRouter({
             }))
         .query(async ({ input }) => {
             try {
-                const response = await axios.get<ApiResponseProps<FairPaginationProps>>(`${env.API_URL}/api/v1/fair/all?limit=${input.limit}&cursor=${input.cursor ?? 0}`);
+                const response = await axios.get<ApiResponseProps<FairPaginationProps>>(`${env.API_URL}/fair/all?limit=${input.limit}&cursor=${input.cursor ?? 0}`);
                 return response.data.data
             } catch (error) {
                 if (error instanceof TRPCClientError) {
@@ -46,7 +46,7 @@ export const fairRouter = createTRPCRouter({
         .input(z.object({ fairId: z.string() }))
         .query(async ({ input }) => {
             try {
-                const response = await axios.get<ApiResponseProps<FairDetailProps>>(`${env.API_URL}/api/v1/fair/${input.fairId}`);
+                const response = await axios.get<ApiResponseProps<FairDetailProps>>(`${env.API_URL}/fair/${input.fairId}`);
                 return response.data.data
             } catch (error) {
                 if (error instanceof TRPCClientError) {

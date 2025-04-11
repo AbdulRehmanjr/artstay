@@ -36,7 +36,7 @@ const links = [
   { href: "/", title: "Eco Retreat" },
   { href: "/dining", title: "Dining Voyage" },
   { href: "/", title: "Eco Transit" },
-  { href: "/travel", title: "Travel Planner" },
+  { href: "/", title: "Travel Planner" },
   { href: "/", title: "Language Services" },
 ];
 
