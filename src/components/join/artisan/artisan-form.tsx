@@ -67,7 +67,7 @@ const artisanFormSchema = z
     recognition: z.enum(["STATE", "NATIONAL", "INTERNATIONAL"]),
     craftId: z.string().min(1, "Craft is required"),
     subCraftId: z.string().min(1, "SubCraft is required"),
-    dp: z.string().min(1, "Profile picture is required"),
+    dp: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -99,7 +99,7 @@ const FormSection = ({
   </div>
 );
 
-export const ArtisanForm = () => {
+export const ArtisanJoinForm = () => {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
@@ -165,7 +165,7 @@ export const ArtisanForm = () => {
       subCraftId: data.subCraftId,
       email:data.email,
       password:data.password,
-      dp: data.dp,
+      dp: data.dp ?? "/placeholder.png",
     });
   };
 
@@ -420,6 +420,11 @@ export const ArtisanForm = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
+                      {
+                        subcrafts.isPending && (
+                          <SelectItem value="loading">Loading...</SelectItem>
+                        )
+                      }
                       {subcrafts.data?.map((subcraft) => (
                         <SelectItem
                           key={subcraft.subCraftId}
@@ -593,7 +598,6 @@ export const ArtisanForm = () => {
 
         <Button
           type="submit"
-          className="w-full"
           disabled={createArtisan.isPending}
         >
           {createArtisan.isPending ? (

@@ -7,6 +7,9 @@ import { useState, useEffect, type FC } from "react";
 import { FaFacebook, FaLinkedin, FaSignal, FaTwitter } from "react-icons/fa6";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
+import { LoginDialog } from "~/components/general/login-dialog";
+import { useSession } from "next-auth/react";
+import { UserAccountDropdown } from "~/components/general/sign-out";
 
 interface HeaderProps {
   disabled?: boolean;
@@ -33,12 +36,13 @@ const links = [
   { href: "/", title: "Eco Retreat" },
   { href: "/dining", title: "Dining Voyage" },
   { href: "/", title: "Eco Transit" },
-  { href: "/travel", title: "Travel Planner" },
+  { href: "/", title: "Travel Planner" },
   { href: "/", title: "Language Services" },
 ];
 
 export const Header: FC<HeaderProps> = ({ disabled = false }) => {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const session = useSession()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -174,14 +178,9 @@ export const Header: FC<HeaderProps> = ({ disabled = false }) => {
                 </li>
               ))}
             </menu>
-            {/* <Button
-              size="lg"
-              type="button"
-              variant={isScrolled ? "outline" : "default"}
-              asChild
-            >
-              <Link href="join-us">Join us</Link>
-            </Button> */}
+            {
+              session.data?.user ? <UserAccountDropdown/> : <LoginDialog/>
+            }
           </nav>
         </div>
       </div>

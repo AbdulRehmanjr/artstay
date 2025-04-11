@@ -14,7 +14,7 @@ export const diningRouter = createTRPCRouter({
         }))
         .query(async ({ input }) => {
             try {
-                const response = await axios.get<ApiResponseProps<RestaurantPaginationProps>>(`${env.API_URL}/api/v1/dining/all?limit=${input.limit}&cursor=${input.cursor ?? 0}`);
+                const response = await axios.get<ApiResponseProps<RestaurantPaginationProps>>(`${env.API_URL}/dining/all?limit=${input.limit}&cursor=${input.cursor ?? 0}`);
                 return response.data.data
             } catch (error) {
                 if (error instanceof TRPCClientError) {
@@ -44,7 +44,7 @@ export const diningRouter = createTRPCRouter({
         .input(z.object({ restaurantId: z.string() }))
         .query(async ({ input }) => {
             try {
-                const response = await axios.get<ApiResponseProps<RestaurantDetailProps>>(`${env.API_URL}/api/v1/dining/detail/${input.restaurantId}`);
+                const response = await axios.get<ApiResponseProps<RestaurantDetailProps>>(`${env.API_URL}/dining/detail/${input.restaurantId}`);
                 return response.data.data
             } catch (error) {
                 if (error instanceof TRPCClientError) {

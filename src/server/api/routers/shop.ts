@@ -16,7 +16,7 @@ export const shopRouter = createTRPCRouter({
             }))
         .query(async ({ input }) => {
             try {
-                const response = await axios.get<ApiResponseProps<ShopPaginationProps>>(`${env.API_URL}/api/v1/shop/all?limit=${input.limit}&cursor=${input.cursor ?? 0}`);
+                const response = await axios.get<ApiResponseProps<ShopPaginationProps>>(`${env.API_URL}/shop/all?limit=${input.limit}&cursor=${input.cursor ?? 0}`);
                 return response.data.data
             } catch (error) {
                 if (error instanceof TRPCClientError) {
@@ -48,7 +48,7 @@ export const shopRouter = createTRPCRouter({
         }))
         .query(async ({ input }) => {
             try {
-                const response = await axios.get<ApiResponseProps<ShopDetailProps>>(`${env.API_URL}/api/v1/shop/${input.shopId}`);
+                const response = await axios.get<ApiResponseProps<ShopDetailProps>>(`${env.API_URL}/shop/${input.shopId}`);
                 return response.data.data
             } catch (error) {
                 if (error instanceof TRPCClientError) {

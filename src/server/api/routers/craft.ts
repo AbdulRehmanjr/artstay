@@ -10,7 +10,7 @@ export const craftRouter = createTRPCRouter({
     getAllCrafts: publicProcedure
         .query(async () => {
             try {
-                const response = await axios.get<ApiResponseProps<CraftProps[]>>(`${env.API_URL}/api/v1/craft/`);
+                const response = await axios.get<ApiResponseProps<CraftProps[]>>(`${env.API_URL}/craft`);
                 return response.data.data
             } catch (error) {
                 if (error instanceof TRPCClientError) {
@@ -40,7 +40,7 @@ export const craftRouter = createTRPCRouter({
         .input(z.object({ craftId: z.string() }))
         .query(async ({ input }) => {
             try {
-                const response = await axios.get<ApiResponseProps<SubCraftProps[]>>(`${env.API_URL}/api/v1/craft/subcrafts/${input.craftId}`);
+                const response = await axios.get<ApiResponseProps<SubCraftProps[]>>(`${env.API_URL}/craft/sub-craft/${input.craftId}`);
                 return response.data.data
             } catch (error) {
                 if (error instanceof TRPCClientError) {
