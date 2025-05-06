@@ -11,8 +11,8 @@ export const ArtisanList = () => {
   const router = useRouter();
   const { ref, entry } = useIntersection({
     root: null,
-    threshold: 0.1, 
-    rootMargin: "100px", 
+    threshold: 0.1,
+    rootMargin: "100px",
   });
 
   const [artisansData, { fetchNextPage, hasNextPage, isFetchingNextPage }] =
@@ -53,7 +53,7 @@ export const ArtisanList = () => {
             {/* Image Container with Overlay */}
             <div className="relative h-64 w-full overflow-hidden">
               <Image
-                src={artisan.dp}
+                src={artisan.dp == "" ? "placeholder.png" : artisan.dp}
                 alt={`${artisan.firstName} ${artisan.lastName}`}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-110"

@@ -45,7 +45,7 @@ export const safariRouter = createTRPCRouter({
         }))
         .query(async ({ input }) => {
             try {
-                const response = await axios.get<ApiResponseProps<SafariPaginationProps>>(`${env.API_URL}/safari/all?limit=${input.limit}&cursor=${input.cursor ?? 0}`);
+                const response = await axios.get<ApiResponseProps<SafariPaginationProps>>(`${env.API_URL}/safari/pagination?limit=${input.limit}&cursor=${input.cursor ?? 0}`);
                 return response.data.data
             } catch (error) {
                 if (error instanceof TRPCClientError) {
