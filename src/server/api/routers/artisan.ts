@@ -43,7 +43,7 @@ export const artisanRouter = createTRPCRouter({
         }))
         .query(async ({ input }) => {
             try {
-                const response = await axios.get<ApiResponseProps<ArtisanPaginationProps>>(`${env.API_URL}/artisan/all?limit=${input.limit}&cursor=${input.cursor ?? 0}`);
+                const response = await axios.get<ApiResponseProps<ArtisanPaginationProps>>(`${env.API_URL}/artisan/pagination?limit=${input.limit}&cursor=${input.cursor ?? 0}`);
                 return response.data.data
             } catch (error) {
                 if (error instanceof TRPCClientError) {

@@ -57,7 +57,7 @@ export const SafariList = () => {
 
               <div className="relative h-72">
                 <Image
-                  src={safari.dp}
+                  src={safari.dp=='' ? 'placeholder.png' : safari.dp}
                   alt={`${safari.firstName} ${safari.lastName}`}
                   fill
                   className="object-cover"
