@@ -1,48 +1,89 @@
 "use client";
 
 import { api } from "~/trpc/react";
-import { useIntersection } from "@mantine/hooks";
-import { useEffect, useMemo } from "react";
 import Image from "next/image";
 import { Badge } from "~/components/ui/badge";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo } from "react";
 
 export const ArtisanList = () => {
   const router = useRouter();
-  const { ref, entry } = useIntersection({
-    root: null,
-    threshold: 0.1,
-    rootMargin: "100px",
-  });
-
-  const [artisansData, { fetchNextPage, hasNextPage, isFetchingNextPage }] =
-    api.artisan.getAllArtisans.useSuspenseInfiniteQuery(
-      {
-        limit: 6,
-      },
-      {
-        getNextPageParam: (lastPage) => {
-          if (!lastPage.metadata.hasNextPage) return undefined;
-          return Number(lastPage.metadata.cursor);
-        },
-      },
-    );
-
-  useEffect(() => {
-    if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
-      void fetchNextPage();
+  const searchParams = useSearchParams();
+  
+  // Fetch all artisans
+  const [artisans] = api.artisan.getAllArtisans.useSuspenseQuery();
+  
+  // Parse filter values from URL
+  const craftFilter = searchParams.get("craft");
+  const subCraftFilter = searchParams.get("subCraft");
+  const ratingFilter = searchParams.get("rating")?.split(",").map(Number) ?? [];
+  const expertiseFilter = searchParams.get("expertise")?.split(",") ?? [];
+  const educationFilter = searchParams.get("education");
+  const trainingFilter = searchParams.get("training");
+  const certificationFilter = searchParams.get("certification");
+  const recognitionFilter = searchParams.get("recognition");
+  const minFeeFilter = searchParams.get("minFee");
+  const maxFeeFilter = searchParams.get("maxFee");
+  const locationFilter = searchParams.get("location");
+  
+ // Fixing the ArtisanList component's filtering logic
+const filteredArtisans = useMemo(() => {
+  return artisans.filter(artisan => {
+    // Apply craft filter
+    if (craftFilter && artisan.craft?.craftId?.toString() !== craftFilter) {
+      return false;
     }
-  }, [entry?.isIntersecting, fetchNextPage, hasNextPage, isFetchingNextPage]);
-
-  const artisans = useMemo(
-    () => artisansData?.pages.flatMap((page) => page.artisans) ?? [],
-    [artisansData],
-  );
+    
+    // Apply subCraft filter
+    if (subCraftFilter && artisan.subCraft?.subCraftId?.toString() !== subCraftFilter) {
+      return false;
+    }
+    
+    // Apply expertise filter (case-insensitive comparison)
+    if (expertiseFilter.length > 0 && 
+        !expertiseFilter.some(exp => exp.toUpperCase() === artisan.experience.toUpperCase())) {
+      return false;
+    }
+    
+    // Apply education filter (case-insensitive)
+    if (educationFilter && 
+        artisan.education.toUpperCase() !== educationFilter.toUpperCase()) {
+      return false;
+    }
+    
+    // Apply training filter (case-insensitive)
+    if (trainingFilter && 
+        artisan.training.toUpperCase() !== trainingFilter.toUpperCase()) {
+      return false;
+    }
+    
+    // Apply certification filter (case-insensitive)
+    if (certificationFilter && 
+        artisan.certificate.toUpperCase() !== certificationFilter.toUpperCase()) {
+      return false;
+    }
+    
+    // Apply recognition filter (note the correct property name)
+    if (recognitionFilter && 
+        artisan.recongnition.toUpperCase() !== recognitionFilter.toUpperCase()) {
+      return false;
+    }
+    
+    
+    // Apply location filter
+    if (locationFilter && artisan.address !== locationFilter) {
+      return false;
+    }
+    
+    // If passed all filters
+    return true;
+  });
+}, [artisans, craftFilter, subCraftFilter, expertiseFilter, educationFilter, trainingFilter, certificationFilter, recognitionFilter, locationFilter]);
 
   return (
-    <div className="px-4 py-8">
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {artisans.map((artisan, index) => (
+    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-4">
+      {filteredArtisans.length > 0 ? (
+        filteredArtisans.map((artisan, index) => (
           <div
             key={artisan.artisanId ?? index}
             className="group relative overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:cursor-pointer hover:shadow-xl"
@@ -53,7 +94,7 @@ export const ArtisanList = () => {
             {/* Image Container with Overlay */}
             <div className="relative h-64 w-full overflow-hidden">
               <Image
-                src={artisan.dp == "" ? "placeholder.png" : artisan.dp}
+                src={artisan.dp == "" ? "/placeholder.png" : artisan.dp}
                 alt={`${artisan.firstName} ${artisan.lastName}`}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-110"
@@ -132,18 +173,13 @@ export const ArtisanList = () => {
               </div>
             </div>
           </div>
-        ))}
-      </div>
-      {/* Loading spinner and end of content indicator */}
-      <div ref={ref} className="mt-8 flex justify-center">
-        {isFetchingNextPage ? (
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        ) : hasNextPage ? (
-          <div className="h-8" />
-        ) : artisans.length > 0 ? (
-          <p className="text-center text-gray-500">No more artisans to load</p>
-        ) : null}
-      </div>
+        ))
+      ) : (
+        <div className="col-span-full text-center py-12">
+          <h3 className="text-lg font-medium text-gray-900">No artisans found</h3>
+          <p className="mt-2 text-sm text-gray-500">Try adjusting your filters to see more results.</p>
+        </div>
+      )}
     </div>
   );
 };
