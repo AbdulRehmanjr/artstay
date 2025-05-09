@@ -10,23 +10,18 @@ export const ArtisanList = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  // Fetch all artisans
-  const [artisans] = api.artisan.getAllArtisans.useSuspenseQuery();
-  
-  // Parse filter values from URL
   const craftFilter = searchParams.get("craft");
   const subCraftFilter = searchParams.get("subCraft");
-  const ratingFilter = searchParams.get("rating")?.split(",").map(Number) ?? [];
-  const expertiseFilter = searchParams.get("expertise")?.split(",") ?? [];
+  // const ratingFilter = searchParams.get("rating")?.split(",").map(Number) ?? [];
   const educationFilter = searchParams.get("education");
   const trainingFilter = searchParams.get("training");
   const certificationFilter = searchParams.get("certification");
   const recognitionFilter = searchParams.get("recognition");
-  const minFeeFilter = searchParams.get("minFee");
-  const maxFeeFilter = searchParams.get("maxFee");
   const locationFilter = searchParams.get("location");
-  
- // Fixing the ArtisanList component's filtering logic
+  const expertiseFilter = useMemo(() => searchParams.get("expertise")?.split(",") ?? [], [searchParams]);
+
+  const [artisans] = api.artisan.getAllArtisans.useSuspenseQuery();
+
 const filteredArtisans = useMemo(() => {
   return artisans.filter(artisan => {
     // Apply craft filter

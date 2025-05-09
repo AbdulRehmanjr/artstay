@@ -18,7 +18,7 @@ import {
   getRecognitionString,
   getTrainingString,
 } from "~/lib/utils";
-import { ArtisanCalendar } from "~/components/artisans/artisan-calendar";
+import { ArtisanCalendar } from "~/components/artisans/package/artisan-calendar";
 import { HeadlingUnderline } from "~/components/common/heading-underline";
 import { ArtisanPackage } from "~/components/artisans/package/package-list";
 
@@ -38,15 +38,15 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
         <div className="flex gap-2">
           <div className="relative -mt-[14rem] h-[15rem] w-[15rem] overflow-hidden rounded-lg shadow-lg">
             <Image
-              src={artisan.dp}
+              src={artisan.dp ==""  ? '/placeholder.png':artisan.dp}
               alt="Profile photo"
               priority
               className="rounded-lg object-cover"
               fill
               sizes="100%"
             />
-            <div className="absolute bottom-0 left-0 right-0 h-[4rem] bg-gradient-to-t from-[#0088cc] to-transparent p-4">
-              <h2 className="text-center text-3xl font-semibold text-white">
+            <div className="absolute bottom-0 left-0 right-0 h-[3rem] bg-gradient-to-t from-[#0088cc] to-transparent p-4">
+              <h2 className="text-center text-sm font-semibold text-white">
                 {artisan.firstName} {artisan.lastName}
               </h2>
             </div>

@@ -7,7 +7,7 @@ export default function ArtisanLayout({
   return (
     <>
       <Banner banner={businessBanner} />
-      <section className="mx-auto max-w-7xl">{children}</section>
+      <section className="mx-auto max-w-7xl mb-32">{children}</section>
     </>
   );
 }
