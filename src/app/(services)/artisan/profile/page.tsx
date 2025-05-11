@@ -38,7 +38,7 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
         <div className="flex gap-2">
           <div className="relative -mt-[14rem] h-[15rem] w-[15rem] overflow-hidden rounded-lg shadow-lg">
             <Image
-              src={artisan.dp ==""  ? '/placeholder.png':artisan.dp}
+              src={artisan.dp == "" ? "/placeholder.png" : artisan.dp}
               alt="Profile photo"
               priority
               className="rounded-lg object-cover"
@@ -229,14 +229,11 @@ export default async function ArtisanPage({ searchParams }: PageProps) {
           )}
         </TabsContent>
         <TabsContent value="packages">
-          <HeadlingUnderline title="Learning Packages"/>
+          <HeadlingUnderline title="Learning Packages" />
           <ArtisanPackage packages={artisan.ArtisanPackage} />
         </TabsContent>
         <TabsContent value="booking" className="grid gap-8">
-          <h2 className="relative col-span-full inline-block text-2xl font-semibold text-gray-800">
-            Booking
-            <div className="absolute -bottom-2 left-0 h-1 w-24 bg-primary" />
-          </h2>
+          <HeadlingUnderline title="Booking" />
           <ArtisanCalendar />
         </TabsContent>
       </div>

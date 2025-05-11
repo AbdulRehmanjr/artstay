@@ -7,13 +7,13 @@ import isBetween from "dayjs/plugin/isBetween";
 import weekday from "dayjs/plugin/weekday";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-import { usePackage } from "~/hooks/use-artisan-package";
+import { usePackage } from "~/hooks/use-artisan";
+import { useRouter } from "next/navigation";
 
 dayjs.extend(isBetween);
 dayjs.extend(weekday);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
-
 
 interface CalendarDay {
   date: Dayjs;
@@ -31,18 +31,17 @@ const weekDays: readonly string[] = [
 ] as const;
 
 export const ArtisanCalendar = () => {
+  const router = useRouter();
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
   const { artisanPackage, setPackage } = usePackage();
 
   const generateCalendarDays = (date: Dayjs): CalendarDay[] => {
     const firstDayOfMonth = date.startOf("month");
     const lastDayOfMonth = date.endOf("month");
-    const startDay = firstDayOfMonth.day(); // Get day of week (0-6)
+    const startDay = firstDayOfMonth.day();
     const daysInMonth = date.daysInMonth();
-    const currentDate = dayjs(); // For comparing with today
-
+    const currentDate = dayjs();
     const days: CalendarDay[] = [];
-
     // Previous month's days
     for (let i = 0; i < startDay; i++) {
       const prevDate = firstDayOfMonth.subtract(startDay - i, "day");
@@ -188,6 +187,19 @@ export const ArtisanCalendar = () => {
       <div className="grid grid-cols-2 gap-8">
         {renderCalendarMonth(currentDate)}
         {renderCalendarMonth(currentDate.add(1, "month"))}
+      </div>
+      <div>
+        <Button
+          type="button"
+          disabled={
+            artisanPackage.startDate == "" || artisanPackage.endDate == ""
+          }
+          onClick={() => {
+            router.push("/artisan/booking");
+          }}
+        >
+          Continue
+        </Button>
       </div>
     </>
   );
