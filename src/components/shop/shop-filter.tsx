@@ -15,20 +15,7 @@ import {
   SelectValue 
 } from "~/components/ui/select";
 import { Checkbox } from "~/components/ui/checkbox";
-
-// Product category options
-const PRODUCT_CATEGORIES = [
-  { id: "pashmina", label: "Pashmina & Woolen Products" },
-  { id: "embroidery", label: "Embroidery & Textiles" },
-  { id: "papierMache", label: "Papier-Mâché Artworks" },
-  { id: "woodCarving", label: "Wood Carving & Furniture" },
-  { id: "copperware", label: "Copperware & Metal Engraving" },
-  { id: "pottery", label: "Pottery & Ceramics" },
-  { id: "wickerwork", label: "Wickerwork & Basketry" },
-  { id: "khatamband", label: "Khatamband & Woodwork" },
-  { id: "jewelry", label: "Handmade Jewelry" },
-  { id: "leather", label: "Leather Goods" },
-];
+import { api } from "~/trpc/react";
 
 // Define the filter form values type
 export type ShopFilterValues = {
@@ -45,8 +32,10 @@ export const ShopFilter = () => {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState("general");
 
+  const [filterOptions,{isFetching}] = api.shop.getFilterOptions.useSuspenseQuery();
+
   // Set up react-hook-form
-  const { control, handleSubmit, setValue } = useForm<ShopFilterValues>({
+  const { control, handleSubmit, setValue, reset } = useForm<ShopFilterValues>({
     defaultValues: {
       search: "",
       category: "",
@@ -86,6 +75,17 @@ export const ShopFilter = () => {
 
     // Update URL with filter params
     router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleReset = () => {
+    reset({
+      search: "",
+      category: "",
+      handmade: "",
+      giCertified: false,
+      location: "",
+    });
+    router.push(pathname);
   };
 
   return (
@@ -161,15 +161,16 @@ export const ShopFilter = () => {
                   <Select 
                     value={field.value} 
                     onValueChange={field.onChange}
+                    disabled={isFetching}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a product category" />
+                      <SelectValue placeholder={isFetching ? "Loading categories..." : "Select a product category"} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Categories</SelectItem>
-                      {PRODUCT_CATEGORIES.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.label}
+                      <SelectItem value="value" disabled>All Categories</SelectItem>
+                      {filterOptions.productCategories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -190,14 +191,18 @@ export const ShopFilter = () => {
                     <Select 
                       value={field.value} 
                       onValueChange={field.onChange}
+                      disabled={isFetching}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select product type" />
+                        <SelectValue placeholder={isFetching ? "Loading..." : "Select product type"} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All Products</SelectItem>
-                        <SelectItem value="Yes">Handmade Only</SelectItem>
-                        <SelectItem value="Mixed">Mixed Products</SelectItem>
+                        <SelectItem value="value" disabled>All Products</SelectItem>
+                        {filterOptions.handmadeOptions.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option === "Yes" ? "Handmade Only" : option}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   )}
@@ -226,10 +231,13 @@ export const ShopFilter = () => {
             </div>
           </TabsContent>
 
-          <div className="mt-8">
+          <div className="mt-8 flex gap-4">
             <Button type="submit">
               <Search className="h-4 w-4 mr-2" />
               Find Shops
+            </Button>
+            <Button type="button" variant="outline" onClick={handleReset}>
+              Reset Filters
             </Button>
           </div>
         </div>

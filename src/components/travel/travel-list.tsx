@@ -8,19 +8,20 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import {
   MapPin,
-  Utensils,
+  Globe,
+  Briefcase,
   Package,
+  DollarSign,
 } from "lucide-react";
-import dayjs from "dayjs";
 
 const getPriceRangeSymbol = (priceRange: string) => {
   switch (priceRange) {
     case "$":
-      return "Inexpensive";
+      return "Budget";
     case "$$":
       return "Moderate";
     case "$$$":
-      return "Expensive";
+      return "Premium";
     case "$$$$":
       return "Luxury";
     default:
@@ -28,95 +29,81 @@ const getPriceRangeSymbol = (priceRange: string) => {
   }
 };
 
-export const RestaurantList = () => {
+export const TravelPlannerList = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   
   const searchFilter = searchParams.get("search");
-  const cuisineFilter = searchParams.get("cuisine");
-  const priceRangeFilter = searchParams.get("priceRange");
   const locationFilter = searchParams.get("location");
+  const priceRangeFilter = searchParams.get("priceRange");
+  const languageFilter = searchParams.get("language");
+  const specialityFilter = searchParams.get("speciality");
 
-  const [restaurants] = api.dining.getAllRestaurants.useSuspenseQuery();
+  const [travelPlanners] = api.travelPlanner.getAllTravelPlanners.useSuspenseQuery();
 
-  const filteredRestaurants = useMemo(() => {
+  const filteredTravelPlanners = useMemo(() => {
     if (
       !searchFilter &&
-      !cuisineFilter &&
+      !locationFilter &&
       !priceRangeFilter &&
-      !locationFilter
+      !languageFilter &&
+      !specialityFilter
     ) {
-      return restaurants;
+      return travelPlanners;
     }
 
-    return restaurants.filter((restaurant) => {
+    return travelPlanners.filter((planner) => {
       if (
         searchFilter &&
         !(
-          restaurant.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
-          restaurant.description.toLowerCase().includes(searchFilter.toLowerCase())
+          planner.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+          planner.description.toLowerCase().includes(searchFilter.toLowerCase())
         )
       ) {
         return false;
       }
 
-      if (cuisineFilter && !restaurant.cuisine.includes(cuisineFilter)) {
+      if (locationFilter && planner.location !== locationFilter) {
         return false;
       }
 
-      if (priceRangeFilter && restaurant.priceRange !== priceRangeFilter) {
+      if (priceRangeFilter && planner.priceRange !== priceRangeFilter) {
         return false;
       }
 
-      if (
-        locationFilter &&
-        !restaurant.location.toLowerCase().includes(locationFilter.toLowerCase())
-      ) {
+      if (languageFilter && !planner.language.includes(languageFilter)) {
+        return false;
+      }
+
+      if (specialityFilter && !planner.speciality.includes(specialityFilter)) {
         return false;
       }
 
       return true;
     });
   }, [
-    restaurants,
+    travelPlanners,
     searchFilter,
-    cuisineFilter,
-    priceRangeFilter,
     locationFilter,
+    priceRangeFilter,
+    languageFilter,
+    specialityFilter,
   ]);
 
   return (
     <div className="px-4 py-8">
-      {((searchFilter ?? false) || (cuisineFilter ?? false) || (priceRangeFilter ?? false) || locationFilter) && (
-        <div className="mb-6 flex flex-wrap gap-2">
-          <span className="text-sm font-medium">Active filters:</span>
-          {searchFilter && (
-            <Badge variant="secondary">Search: {searchFilter}</Badge>
-          )}
-          {cuisineFilter && (
-            <Badge variant="secondary">Cuisine: {cuisineFilter}</Badge>
-          )}
-          {priceRangeFilter && (
-            <Badge variant="secondary">Price: {getPriceRangeSymbol(priceRangeFilter)}</Badge>
-          )}
-          {locationFilter && (
-            <Badge variant="secondary">Location: {locationFilter}</Badge>
-          )}
-        </div>
-      )}
-
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {filteredRestaurants.map((restaurant, index) => (
+        {filteredTravelPlanners.map((planner, index) => (
           <Card
-            key={restaurant.restaurantId ?? index}
+            key={planner.travelPlanerId ?? index}
             className="group cursor-pointer overflow-hidden bg-white transition-all duration-300 hover:shadow-xl"
-            onClick={() => router.push(`/dining/profile?restaurantId=${restaurant.restaurantId}`)}
+            onClick={() => router.push(`/travel-planner/profile?travelPlanerId=${planner.travelPlanerId}`)}
           >
             <div className="relative">
               <div className="relative h-48 overflow-hidden">
                 <Image
-                  src={restaurant.image || '/placeholder.png'}
-                  alt={restaurant.name}
+                  src={planner.dp || '/placeholder.png'}
+                  alt={planner.name}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                   sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -125,51 +112,61 @@ export const RestaurantList = () => {
               </div>
               
               <div className="absolute bottom-3 right-3">
-                <Badge variant="outline" className="bg-white/90 font-mono text-gray-800">
-                  {getPriceRangeSymbol(restaurant.priceRange)}
+                <Badge variant="outline" className="bg-white/90 text-gray-800">
+                  <DollarSign className="mr-1 h-3 w-3" />
+                  {getPriceRangeSymbol(planner.priceRange)}
                 </Badge>
               </div>
             </div>
 
             <CardContent className="p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-lg font-bold text-gray-900 line-clamp-1">{restaurant.name}</h3>
-                <Badge variant="outline" className="text-xs font-normal">
-                  {dayjs(restaurant.createdAt).format('MMM YYYY')}
-                </Badge>
-              </div>
+               <h3 className="text-lg font-bold text-gray-900 line-clamp-1">{planner.name}</h3>
               
               <p className="mb-3 line-clamp-2 min-h-[2.5rem] text-sm text-gray-600">
-                {restaurant.description}
+                {planner.description}
               </p>
               
               <div className="mb-3 flex flex-wrap gap-1">
-                {restaurant.cuisine?.slice(0, 3).map((cuisineItem, i) => (
+                {planner.speciality?.slice(0, 2).map((spec, i) => (
                   <Badge key={i} variant="secondary" className="text-xs">
-                    <Utensils className="mr-1 h-3 w-3" />
-                    {cuisineItem}
+                    <Briefcase className="mr-1 h-3 w-3" />
+                    {spec}
                   </Badge>
                 ))}
-                {restaurant.cuisine?.length > 3 && (
+                {planner.speciality?.length > 2 && (
                   <Badge variant="secondary" className="text-xs">
-                    +{restaurant.cuisine.length - 3} more
+                    +{planner.speciality.length - 2} more
+                  </Badge>
+                )}
+              </div>
+
+              <div className="mb-2 flex flex-wrap gap-1">
+                {planner.language?.slice(0, 2).map((lang, i) => (
+                  <Badge key={i} variant="outline" className="text-xs">
+                    <Globe className="mr-1 h-3 w-3" />
+                    {lang}
+                  </Badge>
+                ))}
+                {planner.language?.length > 2 && (
+                  <Badge variant="outline" className="text-xs">
+                    +{planner.language.length - 2} more
                   </Badge>
                 )}
               </div>
               
               <div className="flex items-center text-xs text-gray-600">
                 <MapPin className="mr-2 h-3 w-3 flex-shrink-0 text-gray-400" />
-                <span className="line-clamp-1">{restaurant.location}</span>
+                <span className="line-clamp-1">{planner.location}</span>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
       
-      {filteredRestaurants.length === 0 && (
+      {filteredTravelPlanners.length === 0 && (
         <div className="mt-8 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 p-8 text-center">
           <Package className="mb-4 h-12 w-12 text-gray-400" />
-          <h3 className="mb-2 text-lg font-medium text-gray-900">No restaurants found</h3>
+          <h3 className="mb-2 text-lg font-medium text-gray-900">No travel planners found</h3>
           <p className="text-gray-500">Try adjusting your search or filter criteria</p>
         </div>
       )}

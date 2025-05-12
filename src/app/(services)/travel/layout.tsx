@@ -1,15 +1,13 @@
 import { Banner } from "~/components/common/banner";
-import { businessBanner } from "~/constants/banner";
+import { safariBanner } from "~/constants/banner";
 
-export default function ArtisanLayout({
+export default function TravelLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-
-  //TODO: Add dining banner
   return (
+    // TODO: add travlebanner
     <>
-      {/* TODO: Add dining banner */}
-      <Banner banner={businessBanner} />
+      <Banner banner={safariBanner} />
       <section className="mx-auto max-w-7xl mb-32">{children}</section>
     </>
   );
