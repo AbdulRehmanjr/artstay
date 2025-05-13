@@ -10,7 +10,7 @@ export const artisanRouter = createTRPCRouter({
   getApplicationStatus: protectedProcedure.query(async ({ ctx }) => {
     try {
       const response = await axios.get<ApiResponseProps<ArtisanDetailProps>>(
-        `${env.API_URL}/artisan/application-status/${ctx.session.user.id}`,
+        `${env.API_URL}/fair/application-status/${ctx.session.user.id}`,
       );
       return response.data.data;
     } catch (error) {

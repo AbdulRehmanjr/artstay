@@ -154,6 +154,7 @@ type FairProps = {
   dp: string;
   address: string;
   description: string;
+  isActive: boolean;
   accountId: string;
 };
 
@@ -228,6 +229,7 @@ type ShopProps = {
   workingDays: string[];
   agreedToTerms: boolean;
   agreedToBlacklist: boolean;
+  isActive:boolean
   dp: string;
   createdAt: Date;
   updatedAt: Date;
@@ -323,6 +325,7 @@ type RestaurantProps = {
   cuisine: string[];
   priceRange: string;
   image: string;
+  isActive: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -385,13 +388,12 @@ type RestaurantDetailProps = {
   menu: RestaurantMenuProps[];
 };
 
-
-type TravelPlannerFilterOptions ={
+type TravelPlannerFilterOptions = {
   locations: string[];
   priceRanges: string[];
   languages: string[];
   specialities: string[];
-}
+};
 
 type TravelPlannerFilterValues = {
   search: string;
@@ -410,8 +412,8 @@ type TravelPlanerProps = {
   language: string[];
   speciality: string[];
   dp: string;
-  isActice:boolean
+  isActice: boolean;
   accountId: string;
-  createdAt:Date
-  updatedAt:Date
+  createdAt: Date;
+  updatedAt: Date;
 };
