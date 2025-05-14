@@ -3,7 +3,7 @@ import { ArtisanBookingForm } from "~/components/artisans/artisan-booking";
 import { HeadlingUnderline } from "~/components/common/heading-underline";
 
 export const metadata: Metadata = {
-  title: "Artisan Experience Booking",
+  title: "Artstay | Artisan Experience Booking",
   description: "Book your artisan experience with our master craftspeople",
 };
 

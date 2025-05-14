@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 type PackageStoreProps = {
   id: string;
@@ -19,17 +20,24 @@ const initialValues: PackageStoreProps = {
   date: ''
 }
 
-export const useSafariPackage = create<SafariPackageStore>()((set) => ({
-  safariPackage: initialValues,
-  setPackage: (safariPackage) => set((state) => ({ 
-    safariPackage: { ...state.safariPackage, ...safariPackage } 
-  })),
-  setTour: (tour) => set((state) => ({ 
-    safariPackage: { 
-      ...state.safariPackage, 
-      id: tour.tourId,
-      tour: tour
-    } 
-  })),
-  clearPackage: () => set({ safariPackage: initialValues })
-}));
+export const useSafari = create<SafariPackageStore>()(
+  persist(
+    (set) => ({
+      safariPackage: initialValues,
+      setPackage: (safariPackage) => set((state) => ({ 
+        safariPackage: { ...state.safariPackage, ...safariPackage } 
+      })),
+      setTour: (tour) => set((state) => ({ 
+        safariPackage: { 
+          ...state.safariPackage, 
+          id: tour.tourId,
+          tour: tour
+        } 
+      })),
+      clearPackage: () => set({ safariPackage: initialValues })
+    }),
+    {
+      name: 'ARTSAY-SAFARI',
+    }
+  )
+);

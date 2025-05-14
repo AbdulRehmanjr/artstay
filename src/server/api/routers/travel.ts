@@ -5,7 +5,7 @@ import { env } from "process";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
-export const TravelRouter = createTRPCRouter({
+export const travelRouter = createTRPCRouter({
   getApplicationStatus: protectedProcedure.query(async ({ ctx }) => {
     try {
       const response = await axios.get<ApiResponseProps<TravelPlanerProps>>(

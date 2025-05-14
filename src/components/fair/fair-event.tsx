@@ -1,6 +1,6 @@
 import { Calendar, CheckCircle2, Building, Map, MapPin } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
-import { FairEventBook } from "~/components/fair/fair-book";
+import { FairEventBook } from "~/components/fair/booking/fair-book";
 import dayjs from "dayjs";
 
 export const FairEvent = ({ event }: { event: FairEventProps }) => {

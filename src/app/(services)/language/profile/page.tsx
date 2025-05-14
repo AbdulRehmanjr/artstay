@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { HeadlingUnderline } from "~/components/common/heading-underline";
 import { SafariPackage } from "~/components/safari/package-list";
-import { SafariCalendar } from "~/components/safari/safari-calendar";
+import { SafariCalendar } from "~/components/safari/booking/safari-calendar";
 
 type PageProps = {
   searchParams: Promise<{ safariId: string }>;

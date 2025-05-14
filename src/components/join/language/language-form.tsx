@@ -11,13 +11,6 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { useToast } from "~/hooks/use-toast";
@@ -25,20 +18,21 @@ import { z } from "zod";
 import { UploadButton } from "~/utils/uploadthing";
 import { api } from "~/trpc/react";
 import {
-  Award,
-  Book,
   Eye,
   EyeOff,
   Loader,
-  MapPin,
-  Scroll,
   User,
   Languages,
-  GraduationCap,
-  Building,
+  Calendar,
+  Briefcase,
+  Monitor,
+  Award,
+  Plus,
+  X,
 } from "lucide-react";
 import { Separator } from "~/components/ui/separator";
-import { useState } from "react";
+import { Checkbox } from "~/components/ui/checkbox";
+import React from "react";
 
 const languageServiceFormSchema = z
   .object({
@@ -59,22 +53,47 @@ const languageServiceFormSchema = z
         "Password must contain uppercase, lowercase and number",
       ),
     confirmPassword: z.string(),
-    address: z.string().min(5, "Address must be at least 5 characters"),
-    phone: z.string().min(10, "Phone number must be at least 10 characters"),
+    profileName: z
+      .string()
+      .min(3, "Profile name must be at least 3 characters"),
+    location: z.string().min(5, "Location must be at least 5 characters"),
     description: z
       .string()
-      .min(10, "Description must be at least 10 characters"),
-    experience: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"]),
-    education: z.enum(["HIGH_SCHOOL", "BACHELORS", "MASTERS", "PHD", "OTHER"]),
-    specialization: z.enum(["TOUR_GUIDE", "INTERPRETER", "TRANSLATOR", "CULTURAL_EXPERT"]),
-    languages: z.array(z.string()).min(2, "Please select at least 2 languages"),
-    certifications: z.string().optional(),
-    availability: z.enum(["FULL_TIME", "PART_TIME", "ON_DEMAND", "SEASONAL"]),
-    dp: z.string().optional(),
+      .min(50, "Description must be at least 50 characters"),
+    experience: z.string().min(10, "Experience must be at least 10 characters"),
+    qualification: z
+      .string()
+      .min(5, "Qualification must be at least 5 characters"),
+    languages: z.array(z.string()).min(1, "Please select at least 1 language"),
+    specialization: z
+      .array(z.string())
+      .min(1, "Please select at least 1 specialization"),
+    serviceMode: z
+      .array(z.string())
+      .min(1, "Please select at least 1 service mode"),
+    certification: z.array(z.string()).optional(),
+    availability: z
+      .array(z.string())
+      .min(1, "Please select your available days"),
+    hourlyRate: z.number().min(1, "Hourly rate must be at least $1"),
+    minBookingHours: z
+      .number()
+      .min(1, "Minimum booking must be at least 1 hour"),
+    maxBookingHours: z
+      .number()
+      .min(1, "Maximum booking must be at least 1 hour"),
+    startTime: z.string(),
+    endTime: z.string(),
+    profileImage: z.string().optional(),
+    portfolio: z.array(z.string()).optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
+  })
+  .refine((data) => data.maxBookingHours >= data.minBookingHours, {
+    message: "Maximum hours must be greater than or equal to minimum hours",
+    path: ["maxBookingHours"],
   });
 
 type LanguageServiceFormInput = z.infer<typeof languageServiceFormSchema>;
@@ -102,13 +121,61 @@ const FormSection = ({
   </div>
 );
 
-export const LanguageServiceJoinForm = () => {
+const availableLanguages = [
+  "English",
+  "Kashmiri",
+  "Hindi",
+  "Urdu",
+  "Arabic",
+  "French",
+  "German",
+  "Spanish",
+  "Chinese",
+  "Japanese",
+  "Russian",
+  "Italian",
+  "Punjabi",
+  "Bengali",
+];
+
+const specializationOptions = [
+  "Translation",
+  "Interpretation",
+  "Transcription",
+  "Localization",
+  "Language Teaching",
+  "Document Translation",
+  "Legal Translation",
+  "Medical Translation",
+  "Technical Translation",
+  "Tourism Guide",
+  "Cultural Consultation",
+];
+
+const serviceModeOptions = [
+  "Online",
+  "In-Person",
+  "Hybrid",
+  "Phone",
+  "Video Call",
+];
+
+const daysOfWeek = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
+
+export const LanguageServiceForm = () => {
   const { toast } = useToast();
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState<boolean>(false);
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
-  
+  const [certifications, setCertifications] = React.useState<string[]>([]);
+  const [currentCertification, setCurrentCertification] = React.useState("");
+  const [portfolioImages, setPortfolioImages] = React.useState<string[]>([]);
+
   const form = useForm<LanguageServiceFormInput>({
     resolver: zodResolver(languageServiceFormSchema),
     defaultValues: {
@@ -117,16 +184,23 @@ export const LanguageServiceJoinForm = () => {
       confirmPassword: "",
       firstName: "",
       lastName: "",
-      address: "",
-      phone: "",
+      profileName: "",
+      location: "",
       description: "",
-      experience: "BEGINNER",
-      education: "BACHELORS",
-      specialization: "TRANSLATOR",
+      experience: "",
+      qualification: "",
       languages: [],
-      certifications: "",
-      availability: "FULL_TIME",
-      dp: "",
+      specialization: [],
+      serviceMode: [],
+      certification: [],
+      availability: [],
+      hourlyRate: 0,
+      minBookingHours: 1,
+      maxBookingHours: 8,
+      startTime: "09:00",
+      endTime: "18:00",
+      profileImage: "",
+      portfolio: [],
     },
   });
 
@@ -137,6 +211,8 @@ export const LanguageServiceJoinForm = () => {
         description: "Language service profile created successfully",
       });
       form.reset();
+      setCertifications([]);
+      setPortfolioImages([]);
     },
     onError: (error) => {
       toast({
@@ -149,37 +225,23 @@ export const LanguageServiceJoinForm = () => {
 
   const onSubmit = async (data: LanguageServiceFormInput) => {
     createLanguageService.mutate({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      password: data.password,
-      address: data.address,
-      phone: data.phone,
-      description: data.description,
-      experience: data.experience,
-      education: data.education,
-      specialization: data.specialization,
-      languages: data.languages,
-      certifications: data.certifications,
-      availability: data.availability,
-      dp: data.dp ?? "/placeholder.png",
+      ...data,
+      certification: certifications,
+      portfolio: portfolioImages,
+      profileImage: data.profileImage ?? "/placeholder.png",
     });
   };
 
-  const availableLanguages = [
-    "English",
-    "Kashmiri",
-    "Hindi",
-    "Urdu",
-    "Arabic",
-    "French",
-    "German",
-    "Spanish",
-    "Chinese",
-    "Japanese",
-    "Russian",
-    "Italian",
-  ];
+  const addCertification = () => {
+    if (currentCertification.trim()) {
+      setCertifications([...certifications, currentCertification]);
+      setCurrentCertification("");
+    }
+  };
+
+  const removeCertification = (index: number) => {
+    setCertifications(certifications.filter((_, i) => i !== index));
+  };
 
   return (
     <Form {...form}>
@@ -187,39 +249,11 @@ export const LanguageServiceJoinForm = () => {
         <Separator className="my-6" />
 
         <FormSection
-          title="Personal Information"
-          description="Your basic profile information"
+          title="Account Information"
+          description="Create your login credentials"
           icon={<User className="h-5 w-5 text-blue-500" />}
         >
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John" {...field} className="w-full" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Doe" {...field} className="w-full" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={form.control}
               name="email"
@@ -237,25 +271,7 @@ export const LanguageServiceJoinForm = () => {
                 </FormItem>
               )}
             />
-            
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="tel"
-                      placeholder="+91 9876543210"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
+
             <FormField
               control={form.control}
               name="password"
@@ -263,61 +279,7 @@ export const LanguageServiceJoinForm = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter password"
-                        {...field}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4 text-gray-500" />
-                        ) : (
-                          <Eye className="h-4 w-4 text-gray-500" />
-                        )}
-                      </Button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={showConfirmPassword ? "text" : "password"}
-                        placeholder="Confirm password"
-                        {...field}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-4 w-4 text-gray-500" />
-                        ) : (
-                          <Eye className="h-4 w-4 text-gray-500" />
-                        )}
-                      </Button>
-                    </div>
+                    <PasswordInput {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -326,15 +288,96 @@ export const LanguageServiceJoinForm = () => {
 
             <FormField
               control={form.control}
-              name="dp"
+              name="confirmPassword"
               render={({ field }) => (
-                <FormItem className="mt-4">
-                  <FormLabel>Profile Picture</FormLabel>
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <PasswordInput {...field} placeholder="Confirm password" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </FormSection>
+
+        <Separator className="my-6" />
+
+        <FormSection
+          title="Personal Information"
+          description="Your basic profile information"
+          icon={<User className="h-5 w-5 text-purple-500" />}
+        >
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Doe" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="profileName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Profile Name</FormLabel>
                   <FormDescription>
-                    Upload a professional photo
+                    This will be your public display name
                   </FormDescription>
                   <FormControl>
-                    <div className="flex-start mt-2 flex">
+                    <Input placeholder="Professional Translator" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Srinagar, Kashmir" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="profileImage"
+              render={({ field }) => (
+                <FormItem className="lg:col-span-2">
+                  <FormLabel>Profile Picture</FormLabel>
+                  <FormDescription>Upload a professional photo</FormDescription>
+                  <FormControl>
+                    <div className="flex items-start gap-4">
                       <UploadButton
                         endpoint="imageUploader"
                         onClientUploadComplete={(res) =>
@@ -360,18 +403,26 @@ export const LanguageServiceJoinForm = () => {
         <Separator className="my-6" />
 
         <FormSection
-          title="Location & Description"
-          description="Tell us about yourself and where you're based"
-          icon={<MapPin className="h-5 w-5 text-green-500" />}
+          title="Professional Details"
+          description="Describe your expertise and experience"
+          icon={<Briefcase className="h-5 w-5 text-green-500" />}
         >
           <FormField
             control={form.control}
-            name="address"
+            name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Address</FormLabel>
+                <FormLabel>Professional Summary</FormLabel>
+                <FormDescription>
+                  Provide a detailed description of your language services
+                  (minimum 50 characters)
+                </FormDescription>
                 <FormControl>
-                  <Input placeholder="123 Language Street, Srinagar" {...field} />
+                  <Textarea
+                    placeholder="I am a professional translator with expertise in..."
+                    className="min-h-[120px]"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -380,17 +431,34 @@ export const LanguageServiceJoinForm = () => {
 
           <FormField
             control={form.control}
-            name="description"
+            name="experience"
             render={({ field }) => (
               <FormItem className="mt-4">
-                <FormLabel>About Your Services</FormLabel>
+                <FormLabel>Experience</FormLabel>
                 <FormDescription>
-                  Describe your language expertise and cultural knowledge
+                  Describe your professional experience (minimum 10 characters)
                 </FormDescription>
                 <FormControl>
                   <Textarea
-                    placeholder="Tell us about your experience with languages, cultural expertise, and how you can help bridge communication gaps..."
-                    className="min-h-[120px]"
+                    placeholder="5+ years of experience in translation and interpretation..."
+                    className="min-h-[80px]"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="qualification"
+            render={({ field }) => (
+              <FormItem className="mt-4">
+                <FormLabel>Qualifications</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="M.A. in Linguistics, B.A. in English Literature"
                     {...field}
                   />
                 </FormControl>
@@ -403,11 +471,11 @@ export const LanguageServiceJoinForm = () => {
         <Separator className="my-6" />
 
         <FormSection
-          title="Language Expertise"
-          description="Select your languages and specialization"
+          title="Language & Specialization"
+          description="Select your languages and areas of expertise"
           icon={<Languages className="h-5 w-5 text-purple-500" />}
         >
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <FormField
               control={form.control}
               name="languages"
@@ -415,29 +483,29 @@ export const LanguageServiceJoinForm = () => {
                 <FormItem>
                   <FormLabel>Languages</FormLabel>
                   <FormDescription>
-                    Select all languages you're proficient in
+                    Select all languages you&apos;re proficient in
                   </FormDescription>
                   <FormControl>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-3">
                       {availableLanguages.map((lang) => (
-                        <label
-                          key={lang}
-                          className="flex items-center space-x-2 text-sm"
-                        >
-                          <input
-                            type="checkbox"
-                            value={lang}
+                        <div key={lang} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={lang}
                             checked={field.value.includes(lang)}
-                            onChange={(e) => {
-                              const updatedLanguages = e.target.checked
+                            onCheckedChange={(checked) => {
+                              const updatedLanguages = checked
                                 ? [...field.value, lang]
                                 : field.value.filter((l) => l !== lang);
                               field.onChange(updatedLanguages);
                             }}
-                            className="h-4 w-4 rounded border-gray-300"
                           />
-                          <span>{lang}</span>
-                        </label>
+                          <label
+                            htmlFor={lang}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {lang}
+                          </label>
+                        </div>
                       ))}
                     </div>
                   </FormControl>
@@ -451,81 +519,33 @@ export const LanguageServiceJoinForm = () => {
               name="specialization"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Specialization</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select specialization" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="TOUR_GUIDE">Tour Guide</SelectItem>
-                      <SelectItem value="INTERPRETER">Interpreter</SelectItem>
-                      <SelectItem value="TRANSLATOR">Translator</SelectItem>
-                      <SelectItem value="CULTURAL_EXPERT">Cultural Expert</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </FormSection>
-
-        <Separator className="my-6" />
-
-        <FormSection
-          title="Qualifications"
-          description="Your education and certification details"
-          icon={<GraduationCap className="h-5 w-5 text-amber-500" />}
-        >
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="education"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Education Level</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select education" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="HIGH_SCHOOL">High School</SelectItem>
-                      <SelectItem value="BACHELORS">Bachelor's Degree</SelectItem>
-                      <SelectItem value="MASTERS">Master's Degree</SelectItem>
-                      <SelectItem value="PHD">PhD</SelectItem>
-                      <SelectItem value="OTHER">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="certifications"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Certifications</FormLabel>
+                  <FormLabel>Specializations</FormLabel>
                   <FormDescription>
-                    List any language or tourism certifications
+                    Select your areas of expertise
                   </FormDescription>
                   <FormControl>
-                    <Textarea
-                      placeholder="TOEFL, Tourism Certificate, Cultural Ambassador..."
-                      className="min-h-[80px]"
-                      {...field}
-                    />
+                    <div className="grid grid-cols-1 gap-3">
+                      {specializationOptions.map((spec) => (
+                        <div key={spec} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={spec}
+                            checked={field.value.includes(spec)}
+                            onCheckedChange={(checked) => {
+                              const updatedSpecs = checked
+                                ? [...field.value, spec]
+                                : field.value.filter((s) => s !== spec);
+                              field.onChange(updatedSpecs);
+                            }}
+                          />
+                          <label
+                            htmlFor={spec}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {spec}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -537,64 +557,275 @@ export const LanguageServiceJoinForm = () => {
         <Separator className="my-6" />
 
         <FormSection
-          title="Experience & Availability"
-          description="Your skill level and work availability"
-          icon={<Building className="h-5 w-5 text-rose-500" />}
+          title="Service Details"
+          description="Configure your service offerings"
+          icon={<Monitor className="h-5 w-5 text-indigo-500" />}
         >
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <FormField
               control={form.control}
-              name="experience"
+              name="serviceMode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Experience Level</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select level" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="BEGINNER">Beginner (0-2 years)</SelectItem>
-                      <SelectItem value="INTERMEDIATE">Intermediate (2-5 years)</SelectItem>
-                      <SelectItem value="ADVANCED">Advanced (5-10 years)</SelectItem>
-                      <SelectItem value="EXPERT">Expert (10+ years)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>Service Modes</FormLabel>
+                  <FormDescription>
+                    How do you provide your services?
+                  </FormDescription>
+                  <FormControl>
+                    <div className="grid grid-cols-2 gap-3">
+                      {serviceModeOptions.map((mode) => (
+                        <div key={mode} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={mode}
+                            checked={field.value.includes(mode)}
+                            onCheckedChange={(checked) => {
+                              const updatedModes = checked
+                                ? [...field.value, mode]
+                                : field.value.filter((m) => m !== mode);
+                              field.onChange(updatedModes);
+                            }}
+                          />
+                          <label
+                            htmlFor={mode}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {mode}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="hourlyRate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Hourly Rate ($)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="50"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="minBookingHours"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Min Booking Hours</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="1"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="maxBookingHours"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Max Booking Hours</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="8"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          </div>
+        </FormSection>
+
+        <Separator className="my-6" />
+
+        <FormSection
+          title="Availability"
+          description="Set your working hours and days"
+          icon={<Calendar className="h-5 w-5 text-amber-500" />}
+        >
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <FormField
               control={form.control}
               name="availability"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Availability</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select availability" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="FULL_TIME">Full Time</SelectItem>
-                      <SelectItem value="PART_TIME">Part Time</SelectItem>
-                      <SelectItem value="ON_DEMAND">On Demand</SelectItem>
-                      <SelectItem value="SEASONAL">Seasonal</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>Available Days</FormLabel>
+                  <FormControl>
+                    <div className="grid grid-cols-2 gap-3">
+                      {daysOfWeek.map((day) => (
+                        <div key={day} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={day}
+                            checked={field.value.includes(day)}
+                            onCheckedChange={(checked) => {
+                              const updatedDays = checked
+                                ? [...field.value, day]
+                                : field.value.filter((d) => d !== day);
+                              field.onChange(updatedDays);
+                            }}
+                          />
+                          <label
+                            htmlFor={day}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {day}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="startTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Start Time</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="endTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>End Time</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+        </FormSection>
+
+        <Separator className="my-6" />
+
+        <FormSection
+          title="Certifications & Portfolio"
+          description="Add your certifications and portfolio images"
+          icon={<Award className="h-5 w-5 text-rose-500" />}
+        >
+          <div className="space-y-6">
+            <div>
+              <FormLabel>Certifications</FormLabel>
+              <div className="mt-2 space-y-3">
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Add certification (e.g., TOEFL, IELTS)"
+                    value={currentCertification}
+                    onChange={(e) => setCurrentCertification(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addCertification();
+                      }
+                    }}
+                  />
+                  <Button type="button" onClick={addCertification} size="sm">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                {certifications.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {certifications.map((cert, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm"
+                      >
+                        <span>{cert}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-4 w-4 p-0"
+                          onClick={() => removeCertification(index)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <FormLabel>Portfolio Images</FormLabel>
+              <FormDescription>
+                Upload samples of your work (max 6 images)
+              </FormDescription>
+              <div className="mt-2 space-y-3">
+                <UploadButton
+                  endpoint="imageUploader"
+                  onClientUploadComplete={(res) => {
+                    if (portfolioImages.length < 6) {
+                      setPortfolioImages([
+                        ...portfolioImages,
+                        res[0]?.appUrl ?? "",
+                      ]);
+                    } else {
+                      toast({
+                        title: "Limit Reached",
+                        description:
+                          "You can only upload up to 6 portfolio images",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                  onUploadError={(error: Error) => {
+                    toast({
+                      variant: "destructive",
+                      title: "Upload Failed",
+                      description: error.message,
+                    });
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </FormSection>
 
@@ -625,5 +856,44 @@ export const LanguageServiceJoinForm = () => {
         )}
       </form>
     </Form>
+  );
+};
+
+// Password Input Component
+const PasswordInput = ({
+  value,
+  onChange,
+  placeholder = "Enter password",
+  ...props
+}: {
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+}) => {
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  return (
+    <div className="relative">
+      <Input
+        type={showPassword ? "text" : "password"}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        {...props}
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+        onClick={() => setShowPassword(!showPassword)}
+      >
+        {showPassword ? (
+          <EyeOff className="h-4 w-4 text-gray-500" />
+        ) : (
+          <Eye className="h-4 w-4 text-gray-500" />
+        )}
+      </Button>
+    </div>
   );
 };

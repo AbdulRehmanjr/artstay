@@ -417,3 +417,31 @@ type TravelPlanerProps = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+type LanguageServiceProps = {
+  languageServiceId: string;
+  profileName: string;
+  firstName: string;
+  lastName: string;
+  description: string;
+  experience: string;
+  languages: string[];
+  specialization: string[];
+  hourlyRate: number;
+  minBookingHours: number;
+  maxBookingHours: number;
+  availability: string[];
+  startTime: string;
+  endTime: string;
+  location: string;
+  serviceMode: string[];
+  certification: string[];
+  qualification: string;
+  profileImage: string;
+  portfolio: string[];
+  rating: number;
+  isActive: boolean;
+  accountId: string;
+  createdAt: Date;
+  updatedAt: Date;
+};

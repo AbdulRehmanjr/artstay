@@ -103,7 +103,6 @@ export const TourCardData = [
     },
 ]
 
-
 export const JoinCard = [
     {
         title: 'Kashmir Handicraft Artisan',
@@ -143,6 +142,6 @@ export const JoinCard = [
     {
         title: 'Language Translator',
         description: "Language translators bridge the communication gap between artisans and international tourists. Partnering with ArtStay ensures the accurate conveyance of Kashmiri craft stories, techniques, and cultural significance to global visitors.",
-        link: '#'
+        link: '/join-us/language'
     },
 ]
