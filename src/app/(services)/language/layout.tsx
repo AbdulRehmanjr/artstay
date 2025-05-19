@@ -1,13 +1,13 @@
 import { Banner } from "~/components/common/banner";
-import { safariBanner } from "~/constants/banner";
+import { businessBanner } from "~/constants/banner";
 
-export default function TravelLayout({
+export default function LanguageLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     // TODO: add travlebanner
     <>
-      <Banner banner={safariBanner} />
+      <Banner banner={businessBanner} />
       <section className="mx-auto max-w-7xl mb-32">{children}</section>
     </>
   );

@@ -37,7 +37,7 @@ const links = [
   { href: "/dining", title: "Dining Voyage" },
   { href: "/", title: "Eco Transit" },
   { href: "/travel", title: "Travel Planner" },
-  { href: "/", title: "Language Services" },
+  { href: "/language", title: "Language Services" },
 ];
 
 export const Header: FC<HeaderProps> = ({ disabled = false }) => {

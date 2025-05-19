@@ -1,17 +1,17 @@
 import { Suspense } from "react";
-import { HydrateClient } from "~/trpc/server";
+import { LanguageFilter } from "~/components/language/filter-tab";
+import { LanguageList } from "~/components/language/language-list";
 import { EventCardSkeleton } from "~/components/skeletons/service";
-import { TravelPlannerFilter } from "~/components/travel/travel-filter";
-import { TravelPlannerList } from "~/components/travel/travel-list";
+import { api, HydrateClient } from "~/trpc/server";
 
 export const dynamic = 'force-dynamic'
-
-export default function TravelPlannerPage() {
+export default function LanguageService() {
+  void api.language.getAll()
   return (
     <HydrateClient>
-      <TravelPlannerFilter />
+      <LanguageFilter />
       <Suspense fallback={<EventCardSkeleton/>}>
-        <TravelPlannerList />
+        <LanguageList />
       </Suspense>
     </HydrateClient>
   );

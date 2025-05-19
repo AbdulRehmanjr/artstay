@@ -76,7 +76,6 @@ export const travelRouter = createTRPCRouter({
       });
     }
   }),
-
   getTravelPlannerFilterOptions: publicProcedure.query(async () => {
     try {
       const response = await axios.get<
@@ -112,7 +111,6 @@ export const travelRouter = createTRPCRouter({
       });
     }
   }),
-
   getTravelPlannerById: publicProcedure
     .input(z.object({ travelPlanerId: z.string() }))
     .query(async ({ input }) => {

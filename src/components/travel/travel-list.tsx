@@ -97,7 +97,7 @@ export const TravelPlannerList = () => {
           <Card
             key={planner.travelPlanerId ?? index}
             className="group cursor-pointer overflow-hidden bg-white transition-all duration-300 hover:shadow-xl"
-            onClick={() => router.push(`/travel-planner/profile?travelPlanerId=${planner.travelPlanerId}`)}
+            onClick={() => router.push(`/travel/profile?travelPlanerId=${planner.travelPlanerId}`)}
           >
             <div className="relative">
               <div className="relative h-48 overflow-hidden">
