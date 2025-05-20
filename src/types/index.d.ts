@@ -229,7 +229,7 @@ type ShopProps = {
   workingDays: string[];
   agreedToTerms: boolean;
   agreedToBlacklist: boolean;
-  isActive:boolean
+  isActive: boolean;
   dp: string;
   createdAt: Date;
   updatedAt: Date;
@@ -418,6 +418,39 @@ type TravelPlanerProps = {
   updatedAt: Date;
 };
 
+type TravelPlanerDetailProps = {
+  travelPlanerId: string;
+  name: string;
+  dp: string;
+  description: string;
+  location: string;
+  priceRange: string;
+  language: string[];
+  speciality: string[];
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  accountId: string;
+  TravelTour: TravelTourProps[];
+};  
+
+type TravelTourProps = {
+  tourId: string;
+  title: string;
+  description: string;
+  image: string;
+  duration: number;
+  isPricePerPerson: boolean;
+  maxGroupSize: number;
+  price: number;
+  languages: string[];
+  features: string[];
+  isActive: boolean;
+  travelPlanerId: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 type LanguageServiceProps = {
   languageServiceId: string;
   profileName: string;
@@ -446,3 +479,30 @@ type LanguageServiceProps = {
   updatedAt: Date;
 };
 
+
+type DocumentedCraftProps  = {
+  craftId: string;
+  craftName: string;
+  region: string;
+  description: string;
+  mediaUrls: string[];
+  documentorId: string;
+}
+
+type  CraftDocumentorProps  = {
+  documentorId: string;
+  firstName: string;
+  lastName: string;
+  profileImage: string;
+  bio: string;
+  expertise: string[];
+  location: string;
+  equipment: string[];
+  yearsOfExperience: number;
+  documentationStyle: string[];
+  mediaTypes: string[];
+  isActive: boolean;
+  accountId: string;
+  portfolioLinks: string[];
+  documentedCrafts: DocumentedCraftProps[];
+}

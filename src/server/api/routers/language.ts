@@ -5,11 +5,6 @@ import { env } from "~/env";
 import axios, { AxiosError } from "axios";
 import { z } from "zod";
 
-interface ApiResponseProps<T> {
-  data: T;
-  message: string;
-  status: number;
-}
 
 interface LanguagePaginationProps {
   items: LanguageServiceProps[];
