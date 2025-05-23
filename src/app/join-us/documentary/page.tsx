@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { HydrateClient } from "~/trpc/server";
 import { Camera, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { CraftDocumentorRegistrationStatus } from "~/components/join/document/application-status";
+import { CraftDocumentorRegistrationStatus } from "~/components/join/documentary/application-status";
 
 export default function CraftDocumentorJoinPage() {
   return (

@@ -21,8 +21,7 @@ export const appRouter = createTRPCRouter({
   dining:diningRouter,
   travelPlanner:travelRouter,
   language:languageRouter,
-  document: craftDocumentorRouter,
-
+  documentor: craftDocumentorRouter,
 });
 
 

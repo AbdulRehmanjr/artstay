@@ -137,7 +137,7 @@ export const JoinCard = [
     {
         title: 'Handicraft Visual Storyteller',
         description: "Visual storytellers capture Kashmir’s handicrafts through stunning photography, videography, and aerial footage for tourists. Your work showcases the essence of Kashmir’s artisan heritage, inspiring a global audience and elevating crafts.",
-        link: '#'
+        link: '/join-us/documentary'
     },
     {
         title: 'Language Translator',

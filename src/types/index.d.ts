@@ -432,7 +432,7 @@ type TravelPlanerDetailProps = {
   updatedAt: string;
   accountId: string;
   TravelTour: TravelTourProps[];
-};  
+};
 
 type TravelTourProps = {
   tourId: string;
@@ -479,30 +479,76 @@ type LanguageServiceProps = {
   updatedAt: Date;
 };
 
-
-type DocumentedCraftProps  = {
+type DocumentedCraftProps = {
   craftId: string;
   craftName: string;
   region: string;
   description: string;
   mediaUrls: string[];
   documentorId: string;
-}
+};
 
-type  CraftDocumentorProps  = {
+type CraftDocumentorProps = {
   documentorId: string;
   firstName: string;
   lastName: string;
-  profileImage: string;
-  bio: string;
-  expertise: string[];
-  location: string;
-  equipment: string[];
-  yearsOfExperience: number;
-  documentationStyle: string[];
-  mediaTypes: string[];
+  dp: string;
+  description: string;
+  address: string;
+  yearsExperience: number;
+  specialization: string[];
+  languages: string[];
+  craftFocusAreas: string[];
+  accountId: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type DocumentorFilterOptions =  {
+  specializations: string[];
+  craftFocusAreas: string[];
+  languages: string[];
+  packageTypes: string[];
+  priceRanges: string[];
+}
+
+type DocumentorDetailProps = {
+  documentorId: string;
+  firstName: string;
+  lastName: string;
+  dp: string;
+  address: string;
+  description: string;
+  yearsExperience: number;
+  specialization: string[];
+  craftFocusAreas: string[];
+  languages: string[];
   isActive: boolean;
   accountId: string;
-  portfolioLinks: string[];
-  documentedCrafts: DocumentedCraftProps[];
-}
+  createdAt: Date;
+  updatedAt: Date;
+  DocumentorPackage: DocumentorPackageProps[];
+  DocumentorPortfolio?: DocumentorPortfolioProps;
+};
+
+type DocumentorPackageProps = {
+  packageId: string;
+  title: string;
+  description: string;
+  duration: number;
+  deliverables: string[];
+  price: number;
+  documentorId: string;
+  packageType: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type DocumentorPortfolioProps = {
+  portfolioId: string;
+  images: string[];
+  documentorId: string;
+  createdAt: Date;
+  updatedAt: Date;
+};

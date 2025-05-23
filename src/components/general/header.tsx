@@ -32,7 +32,7 @@ const links = [
   { href: "/safari", title: "Craft Safari" },
   { href: "/fair", title: "Craft Fair" },
   { href: "/shop", title: "Craft Store" },
-  { href: "/", title: "Craft Documenter" },
+  { href: "/documentary", title: "Craft Documenter" },
   { href: "/", title: "Eco Retreat" },
   { href: "/dining", title: "Dining Voyage" },
   { href: "/", title: "Eco Transit" },

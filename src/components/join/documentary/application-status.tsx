@@ -11,11 +11,9 @@ import {
   UserPlus,
   Camera,
   MapPin,
-  FileText,
   Film,
   Briefcase,
-  Globe,
-  Image as ImageIcon,
+  User,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
@@ -29,7 +27,7 @@ import {
 } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { cn } from "~/lib/utils";
-import { CraftDocumentorForm } from "./document-form";
+import { CraftDocumentorForm } from "~/components/join/documentary/document-form";
 
 export const CraftDocumentorRegistrationStatus = () => {
   const session = useSession();
@@ -41,7 +39,7 @@ export const CraftDocumentorRegistrationStatus = () => {
     data: documentorData,
     isLoading: isLoadingApplication,
     refetch,
-  } = api.document.getApplicationStatus.useQuery(undefined, {
+  } = api.documentor.getApplicationStatus.useQuery(undefined, {
     enabled: !!session.data,
   });
 
@@ -240,11 +238,11 @@ export const CraftDocumentorRegistrationStatus = () => {
               {/* Profile Image */}
               <div className="flex flex-col items-center lg:items-start">
                 <div className="relative h-40 w-40 overflow-hidden rounded-full border-4 border-primary/10">
-                  {documentorData.profileImage &&
-                  documentorData.profileImage !== "none" &&
-                  documentorData.profileImage !== "" ? (
+                  {documentorData.dp &&
+                  documentorData.dp !== "none" &&
+                  documentorData.dp !== "" ? (
                     <Image
-                      src={documentorData.profileImage}
+                      src={documentorData.dp}
                       alt={`${documentorData.firstName} ${documentorData.lastName}`}
                       fill
                       className="object-cover"
@@ -266,13 +264,13 @@ export const CraftDocumentorRegistrationStatus = () => {
                   {documentorData.firstName} {documentorData.lastName}
                 </h2>
                 <p className="mt-2 text-gray-600">
-                  Craft Documentor with {documentorData.yearsOfExperience} years of experience
+                  Craft Documentor with {documentorData.yearsExperience} years of experience
                 </p>
 
                 {/* Expertise Tags */}
-                {documentorData.expertise && documentorData.expertise.length > 0 && (
+                {documentorData.specialization && documentorData.specialization.length > 0 && (
                   <div className="mt-3 flex flex-wrap justify-center gap-2 lg:justify-start">
-                    {documentorData.expertise.map((expertise, index) => (
+                    {documentorData.specialization.map((expertise, index) => (
                       <Badge
                         key={index}
                         variant="secondary"
@@ -288,7 +286,7 @@ export const CraftDocumentorRegistrationStatus = () => {
                 {/* Location */}
                 <div className="mt-2 flex items-center justify-center lg:justify-start">
                   <MapPin className="mr-1 h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">{documentorData.location}</span>
+                  <span className="text-sm text-gray-600">{documentorData.address}</span>
                 </div>
 
                 <Badge
@@ -313,17 +311,6 @@ export const CraftDocumentorRegistrationStatus = () => {
                   <CardTitle className="text-lg">Basic Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <FileText className="mt-0.5 h-5 w-5 text-primary" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-700">
-                        Bio
-                      </p>
-                      <p className="text-gray-600">
-                        {documentorData.bio}
-                      </p>
-                    </div>
-                  </div>
 
                   <div className="flex items-start gap-3">
                     <MapPin className="mt-0.5 h-5 w-5 text-primary" />
@@ -332,7 +319,7 @@ export const CraftDocumentorRegistrationStatus = () => {
                         Location
                       </p>
                       <p className="text-gray-600">
-                        {documentorData.location}
+                        {documentorData.address}
                       </p>
                     </div>
                   </div>
@@ -344,7 +331,7 @@ export const CraftDocumentorRegistrationStatus = () => {
                         Years of Experience
                       </p>
                       <p className="text-gray-600">
-                        {documentorData.yearsOfExperience} years
+                        {documentorData.yearsExperience} years
                       </p>
                     </div>
                   </div>
@@ -361,12 +348,12 @@ export const CraftDocumentorRegistrationStatus = () => {
                 <CardContent className="space-y-4">
                   <div>
                     <p className="text-sm font-medium text-gray-700">
-                      Equipment Used
+                      Lnaguage Support
                     </p>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {documentorData.equipment?.map((item, index) => (
+                      {documentorData.languages?.map((item, index) => (
                         <Badge key={index} variant="outline">
-                          <Camera className="mr-1 h-3 w-3" />
+                          <User className="mr-1 h-3 w-3" />
                           {item}
                         </Badge>
                       ))}
@@ -375,10 +362,10 @@ export const CraftDocumentorRegistrationStatus = () => {
 
                   <div>
                     <p className="text-sm font-medium text-gray-700">
-                      Documentation Styles
+                      Craft support
                     </p>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {documentorData.documentationStyle?.map((style, index) => (
+                      {documentorData.craftFocusAreas?.map((style, index) => (
                         <Badge key={index} variant="secondary">
                           <Film className="mr-1 h-3 w-3" />
                           {style}
@@ -387,91 +374,8 @@ export const CraftDocumentorRegistrationStatus = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">
-                      Media Types
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {documentorData.mediaTypes?.map((type, index) => (
-                        <Badge key={index} variant="secondary">
-                          <ImageIcon className="mr-1 h-3 w-3" />
-                          {type}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
-
-              {/* Portfolio Links */}
-              {documentorData.portfolioLinks && documentorData.portfolioLinks.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Portfolio Links</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {documentorData.portfolioLinks.map((link, index) => (
-                        <li key={index} className="flex items-center gap-2">
-                          <Globe className="h-4 w-4 text-primary" />
-                          <a 
-                            href={link} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline"
-                          >
-                            {link}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Documented Crafts */}
-              {documentorData.documentedCrafts && documentorData.documentedCrafts.length > 0 && (
-                <Card className="lg:col-span-2">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Documented Crafts</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                      {documentorData.documentedCrafts.map((craft, index) => (
-                        <Card key={index} className="border-primary/10">
-                          <CardHeader className="pb-2">
-                            <CardTitle className="text-base">{craft.craftName}</CardTitle>
-                            <CardDescription className="flex items-center gap-1">
-                              <MapPin className="h-3 w-3" /> {craft.region}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                            <p className="text-sm text-gray-600">{craft.description}</p>
-                            
-                            {craft.mediaUrls && craft.mediaUrls.length > 0 && (
-                              <div className="mt-3 grid grid-cols-2 gap-2">
-                                {craft.mediaUrls.slice(0, 4).map((url, mediaIndex) => (
-                                  <div 
-                                    key={mediaIndex} 
-                                    className="relative aspect-square overflow-hidden rounded-md"
-                                  >
-                                    <Image 
-                                      src={url} 
-                                      alt={`${craft.craftName} media ${mediaIndex + 1}`}
-                                      fill
-                                      className="object-cover"
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
             </div>
           </div>
 
