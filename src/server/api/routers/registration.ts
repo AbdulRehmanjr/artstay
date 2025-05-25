@@ -389,4 +389,57 @@ export const registerRouter = createTRPCRouter({
         });
       }
     }),
+
+  createHotelService: publicProcedure
+  .input(
+    z.object({
+      email: z.string().email(),
+      password: z.string(),
+      firstName: z.string(),
+      lastName: z.string(),
+      hotelName: z.string(),
+      address: z.string(),
+      description: z.string(),
+      phone: z.string(),
+      longitude: z.string().optional(),
+      latitude: z.string().optional(),
+      checkIn: z.string(),
+      checkOut: z.string(),
+    }),
+  )
+  .mutation(async ({ input }) => {
+    try {
+      await axios.post<ApiResponseProps<null>>(
+        `${env.API_URL}/register/hotel`,
+        input,
+      );
+    } catch (error) {
+      if (error instanceof TRPCClientError) {
+        console.error(error.message);
+        throw new TRPCError({
+          message: error.message,
+          code: "NOT_FOUND",
+        });
+      } else if (error instanceof AxiosError) {
+        const axiosError = error as AxiosError<{ errors: string[] }>;
+        console.error(axiosError.response?.data.errors);
+        throw new TRPCError({
+          message:
+            Array.isArray(
+              (error.response?.data as { errors: string[] })?.errors,
+            ) &&
+            typeof (error.response?.data as { errors: string[] })
+              .errors[0] === "string"
+              ? (error.response?.data as { errors: string[] }).errors[0]
+              : "Unknown error",
+          code: "BAD_REQUEST",
+        });
+      }
+      console.error(error);
+      throw new TRPCError({
+        message: "Something went wrong while creating hotel service",
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
+  }),
 });

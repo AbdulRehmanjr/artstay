@@ -552,3 +552,24 @@ type DocumentorPortfolioProps = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+type HotelProps  = {
+ hotelId: string;
+ code: string;
+ name: string;
+ address: string;
+ longitude: number;
+ latitude: number;
+ description: string;
+ firstName: string;
+ lastName: string;
+ email: string;
+ phone: string;
+ checkIn: string;
+ checkOut: string;
+ isActive: boolean;
+ images: string[];
+ createdAt: Date;
+ updatedAt: Date;
+ accountId: string;
+}

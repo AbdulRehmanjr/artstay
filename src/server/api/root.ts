@@ -10,6 +10,7 @@ import { diningRouter } from "~/server/api/routers/dining";
 import { travelRouter } from "~/server/api/routers/travel";
 import { languageRouter } from "~/server/api/routers/language";
 import { craftDocumentorRouter } from "~/server/api/routers/document";
+import { hotelRouter } from "./routers/hotel";
 
 export const appRouter = createTRPCRouter({
   register:registerRouter,
@@ -22,6 +23,7 @@ export const appRouter = createTRPCRouter({
   travelPlanner:travelRouter,
   language:languageRouter,
   documentor: craftDocumentorRouter,
+  hotel:hotelRouter
 });
 
 
