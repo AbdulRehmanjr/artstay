@@ -573,3 +573,21 @@ type HotelProps  = {
  updatedAt: Date;
  accountId: string;
 }
+
+type RoomProps = {
+  roomId: string;
+  code: string;
+  name: string;
+  capacity: number;
+  area: number;
+  features: string[];
+  description: string;
+  dp: string;
+  beds: number;
+  quantity: number;
+  price: number;
+  isActive: boolean;
+  minimumstay: number;
+  images: string[];
+  hotelId: string;
+};
