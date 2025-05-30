@@ -1,6 +1,5 @@
 "use client";
 
-import { useForm } from "react-hook-form";
 import { useState, useEffect, useRef } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
 import { Button } from "~/components/ui/button";
@@ -9,30 +8,46 @@ import { useRouter, usePathname } from "next/navigation";
 import dayjs from "dayjs";
 import { cn } from "~/lib/utils";
 
-// Define the filter form values type
-export type HotelFilterValues = {
-  checkIn: string;
-  checkOut: string;
-  adults: number;
-  child: number;
-};
+export const EcoRetreatFilter = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [activeTab, setActiveTab] = useState("general");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showGuestSelector, setShowGuestSelector] = useState(false);
+  const datePickerRef = useRef<HTMLDivElement>(null);
+  const guestSelectorRef = useRef<HTMLDivElement>(null);
 
-interface DateRangePickerProps {
-  checkIn: string;
-  checkOut: string;
-  onDateChange: (checkIn: string, checkOut: string) => void;
-  onClose: () => void;
-}
+  // Only these 4 states - that's it!
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
+  const [adults, setAdults] = useState(2);
+  const [child, setChild] = useState(0);
 
-const DateRangePicker = ({ checkIn, checkOut, onDateChange, onClose }: DateRangePickerProps) => {
+  // Date picker internal state
   const [currentMonth, setCurrentMonth] = useState(dayjs());
-  const [selectedStart, setSelectedStart] = useState<dayjs.Dayjs | null>(
-    checkIn ? dayjs(checkIn) : null
-  );
-  const [selectedEnd, setSelectedEnd] = useState<dayjs.Dayjs | null>(
-    checkOut ? dayjs(checkOut) : null
-  );
+  const [selectedStart, setSelectedStart] = useState<dayjs.Dayjs | null>(null);
+  const [selectedEnd, setSelectedEnd] = useState<dayjs.Dayjs | null>(null);
   const [isSelectingEnd, setIsSelectingEnd] = useState(false);
+
+  // Update date picker when props change
+  useEffect(() => {
+    setSelectedStart(checkIn ? dayjs(checkIn) : null);
+    setSelectedEnd(checkOut ? dayjs(checkOut) : null);
+  }, [checkIn, checkOut]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
+        setShowDatePicker(false);
+      }
+      if (guestSelectorRef.current && !guestSelectorRef.current.contains(event.target as Node)) {
+        setShowGuestSelector(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleDateClick = (date: dayjs.Dayjs) => {
     if (!selectedStart || (selectedStart && selectedEnd) || isSelectingEnd) {
@@ -46,15 +61,55 @@ const DateRangePicker = ({ checkIn, checkOut, onDateChange, onClose }: DateRange
       } else {
         setSelectedEnd(date);
         setIsSelectingEnd(false);
-        onDateChange(selectedStart.format('YYYY-MM-DD'), date.format('YYYY-MM-DD'));
-        onClose();
+        setCheckIn(selectedStart.format('YYYY-MM-DD'));
+        setCheckOut(date.format('YYYY-MM-DD'));
+        setShowDatePicker(false);
       }
     } else {
       setSelectedEnd(date);
       setIsSelectingEnd(false);
-      onDateChange(selectedStart.format('YYYY-MM-DD'), date.format('YYYY-MM-DD'));
-      onClose();
+      setCheckIn(selectedStart.format('YYYY-MM-DD'));
+      setCheckOut(date.format('YYYY-MM-DD'));
+      setShowDatePicker(false);
     }
+  };
+
+  const updateGuests = (type: 'adults' | 'child', operation: 'add' | 'subtract') => {
+    if (type === 'adults') {
+      const newAdults = operation === 'add' ? adults + 1 : Math.max(1, adults - 1);
+      setAdults(newAdults);
+    } else {
+      const newChild = operation === 'add' ? child + 1 : Math.max(0, child - 1);
+      setChild(newChild);
+    }
+  };
+
+  const onSubmit = () => {
+    setShowGuestSelector(false);
+    setShowDatePicker(false);
+    
+    const params = new URLSearchParams();
+    
+    if (checkIn) params.set("checkIn", checkIn);
+    if (checkOut) params.set("checkOut", checkOut);
+    params.set("adults", adults.toString());
+    params.set("child", child.toString());
+
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const onClear = () => {
+    setCheckIn("");
+    setCheckOut("");
+    setAdults(2);
+    setChild(0);
+    setSelectedStart(null);
+    setSelectedEnd(null);
+    setShowGuestSelector(false);
+    setShowDatePicker(false);
+    
+    // Navigate to clean URL without any params
+    router.push(pathname);
   };
 
   const renderCalendar = (monthOffset = 0) => {
@@ -140,179 +195,10 @@ const DateRangePicker = ({ checkIn, checkOut, onDateChange, onClose }: DateRange
     );
   };
 
-  return (
-    <div className="absolute top-full left-0 z-[9999] bg-white border rounded-lg shadow-lg mt-2 min-w-[600px]">
-      <div className="flex">
-        {renderCalendar(0)}
-        <div className="border-l">
-          {renderCalendar(1)}
-        </div>
-      </div>
-      <div className="border-t p-4 flex justify-between items-center">
-        <div className="text-sm text-gray-600">
-          {selectedStart && selectedEnd ? (
-            `${selectedStart.format('MMM DD')} - ${selectedEnd.format('MMM DD, YYYY')}`
-          ) : selectedStart ? (
-            `Check-in: ${selectedStart.format('MMM DD, YYYY')}`
-          ) : (
-            'Select your dates'
-          )}
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={onClose}>
-            Cancel
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-interface GuestSelectorProps {
-  adults: number;
-  child: number;
-  onGuestChange: (adults: number, child: number) => void;
-  onClose: () => void;
-}
-
-const GuestSelector = ({ adults, child, onGuestChange }: GuestSelectorProps) => {
-  const [localAdults, setLocalAdults] = useState(adults);
-  const [localchild, setLocalchild] = useState(child);
-
-  const updateGuests = (type: 'adults' | 'child', operation: 'add' | 'subtract') => {
-    if (type === 'adults') {
-      const newAdults = operation === 'add' ? localAdults + 1 : Math.max(1, localAdults - 1);
-      setLocalAdults(newAdults);
-      onGuestChange(newAdults, localchild); // Update immediately
-    } else {
-      const newchild = operation === 'add' ? localchild + 1 : Math.max(0, localchild - 1);
-      setLocalchild(newchild);
-      onGuestChange(localAdults, newchild); // Update immediately
-    }
-  };
-
-  return (
-    <div className="absolute top-full right-0 z-[9999] bg-white border rounded-lg shadow-lg mt-2 w-80">
-      <div className="p-4 space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="font-medium">Adults</div>
-            <div className="text-sm text-gray-500">Ages 13 or above</div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => updateGuests('adults', 'subtract')}
-              disabled={localAdults <= 1}
-              className="h-8 w-8 p-0"
-            >
-              <Minus className="h-4 w-4" />
-            </Button>
-            <span className="w-8 text-center">{localAdults}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => updateGuests('adults', 'add')}
-              disabled={localAdults >= 10}
-              className="h-8 w-8 p-0"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="font-medium">child</div>
-            <div className="text-sm text-gray-500">Ages 0-12</div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => updateGuests('child', 'subtract')}
-              disabled={localchild <= 0}
-              className="h-8 w-8 p-0"
-            >
-              <Minus className="h-4 w-4" />
-            </Button>
-            <span className="w-8 text-center">{localchild}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => updateGuests('child', 'add')}
-              disabled={localchild >= 10}
-              className="h-8 w-8 p-0"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export const EcoRetreatFilter = () => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [activeTab, setActiveTab] = useState("general");
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showGuestSelector, setShowGuestSelector] = useState(false);
-  const datePickerRef = useRef<HTMLDivElement>(null);
-  const guestSelectorRef = useRef<HTMLDivElement>(null);
-
-  const { handleSubmit, setValue, watch } = useForm<HotelFilterValues>({
-    defaultValues: {
-      checkIn: "",
-      checkOut: "",
-      adults: 2,
-      child: 0,
-    },
-  });
-
-  const watchedValues = watch();
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
-        setShowDatePicker(false);
-      }
-      if (guestSelectorRef.current && !guestSelectorRef.current.contains(event.target as Node)) {
-        setShowGuestSelector(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const onSubmit = (data: HotelFilterValues) => {
-    const params = new URLSearchParams();
-    
-    if (data.checkIn) params.set("checkIn", data.checkIn);
-    if (data.checkOut) params.set("checkOut", data.checkOut);
-    params.set("adults", data.adults.toString());
-    params.set("child", data.child.toString());
-
-    router.push(`${pathname}?${params.toString()}`);
-  };
-
-  const handleDateChange = (checkIn: string, checkOut: string) => {
-    setValue("checkIn", checkIn);
-    setValue("checkOut", checkOut);
-  };
-
-  const handleGuestChange = (adults: number, child: number) => {
-    setValue("adults", adults);
-    setValue("child", child);
-  };
-
   const formatDateRange = () => {
-    if (watchedValues.checkIn && watchedValues.checkOut) {
-      const start = dayjs(watchedValues.checkIn);
-      const end = dayjs(watchedValues.checkOut);
+    if (checkIn && checkOut) {
+      const start = dayjs(checkIn);
+      const end = dayjs(checkOut);
       const nights = end.diff(start, 'day');
       return `${start.format('MMM DD')} - ${end.format('MMM DD')} (${nights} night${nights !== 1 ? 's' : ''})`;
     }
@@ -320,13 +206,13 @@ export const EcoRetreatFilter = () => {
   };
 
   const formatGuests = () => {
-    const guestText = `${watchedValues.adults} adult${watchedValues.adults !== 1 ? 's' : ''}`;
-    const childText = watchedValues.child > 0 ? `, ${watchedValues.child} child${watchedValues.child !== 1 ? 'ren' : ''}` : '';
+    const guestText = `${adults} adult${adults !== 1 ? 's' : ''}`;
+    const childText = child > 0 ? `, ${child} child${child !== 1 ? 'ren' : ''}` : '';
     return guestText + childText;
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="-mt-24">
+    <div className="-mt-24">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="flex h-auto flex-wrap gap-2 bg-transparent p-0">
           <div className="rounded-b-none rounded-t-lg bg-secondary px-4 py-2 font-text text-lg text-white z-[101] p-3">
@@ -362,12 +248,30 @@ export const EcoRetreatFilter = () => {
                 </Button>
                 
                 {showDatePicker && (
-                  <DateRangePicker
-                    checkIn={watchedValues.checkIn}
-                    checkOut={watchedValues.checkOut}
-                    onDateChange={handleDateChange}
-                    onClose={() => setShowDatePicker(false)}
-                  />
+                  <div className="absolute top-full left-0 z-[9999] bg-white border rounded-lg shadow-lg mt-2 min-w-[600px]">
+                    <div className="flex">
+                      {renderCalendar(0)}
+                      <div className="border-l">
+                        {renderCalendar(1)}
+                      </div>
+                    </div>
+                    <div className="border-t p-4 flex justify-between items-center">
+                      <div className="text-sm text-gray-600">
+                        {selectedStart && selectedEnd ? (
+                          `${selectedStart.format('MMM DD')} - ${selectedEnd.format('MMM DD, YYYY')}`
+                        ) : selectedStart ? (
+                          `Check-in: ${selectedStart.format('MMM DD, YYYY')}`
+                        ) : (
+                          'Select your dates'
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={() => setShowDatePicker(false)}>
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
 
@@ -384,17 +288,73 @@ export const EcoRetreatFilter = () => {
                 </Button>
                 
                 {showGuestSelector && (
-                  <GuestSelector
-                    adults={watchedValues.adults}
-                    child={watchedValues.child}
-                    onGuestChange={handleGuestChange}
-                    onClose={() => setShowGuestSelector(false)}
-                  />
+                  <div className="absolute top-full right-0 z-[9999] bg-white border rounded-lg shadow-lg mt-2 w-80">
+                    <div className="p-4 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-medium">Adults</div>
+                          <div className="text-sm text-gray-500">Ages 13 or above</div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => updateGuests('adults', 'subtract')}
+                            disabled={adults <= 1}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="w-8 text-center">{adults}</span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => updateGuests('adults', 'add')}
+                            disabled={adults >= 10}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-medium">Children</div>
+                          <div className="text-sm text-gray-500">Ages 0-12</div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => updateGuests('child', 'subtract')}
+                            disabled={child <= 0}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="w-8 text-center">{child}</span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => updateGuests('child', 'add')}
+                            disabled={child >= 10}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
 
-              <div className="lg:col-span-1 flex items-end">
-                <Button type="submit" className="w-full h-12">
+              <div className="lg:col-span-1 flex items-end gap-2">
+                <Button type="button" onClick={onClear} variant="outline" className="flex-1 h-12">
+                  Clear
+                </Button>
+                <Button type="button" onClick={onSubmit} className="flex-1 h-12">
                   <Search className="h-4 w-4" />
                 </Button>
               </div>
@@ -402,6 +362,6 @@ export const EcoRetreatFilter = () => {
           </TabsContent>
         </div>
       </Tabs>
-    </form>
+    </div>
   );
 };

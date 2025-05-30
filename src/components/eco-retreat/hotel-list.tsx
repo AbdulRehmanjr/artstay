@@ -141,7 +141,7 @@ export const HotelList = () => {
                     </div>
                   </div>
                 </div>
-                <Button className="my-2" asChild>
+                <Button className="my-2 w-full" asChild>
                   <Link href={`/eco-retreat/hotel?hotelId=${hotel.hotelId}`}>
                     Detail
                   </Link>
