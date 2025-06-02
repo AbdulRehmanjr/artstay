@@ -80,10 +80,10 @@ export const ecoretreactRouter = createTRPCRouter({
     }),
     getBlockDatesByRoomId : publicProcedure
     .input(z.object({roomId:z.string()}))
-    .query(async (input)=>{
+    .query(async ({input})=>{
        try {
         const response = await axios.get<ApiResponseProps<RoomProps[]>>(
-          `${env.API_URL}/property/rooms-hotel/${input.hotelId}`,
+          `${env.API_URL}/property/rooms-hotel/${input.roomId}`,
         );
         return response.data.data;
       } catch (error) {

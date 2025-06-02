@@ -1,52 +1,45 @@
 // import Image from "next/image";
 import { CenterSection } from "~/components/common/center-section";
-import { BusinessCardData } from "~/constants/card";
+import { DiningCardData } from "~/constants/card";
 import { Banner } from "~/components/common/banner";
-import { businessBanner } from "~/constants/banner";
-import { BusinessForm } from "~/components/landing/business/form";
+import { diningBanner } from "~/constants/banner";
+import { DiningForm } from "~/components/landing/dining/form";
 
-export const BusinessLanding = () => {
+export const DiningLanding = () => {
   return (
     <>
-      <Banner banner={businessBanner} />
+      <Banner banner={diningBanner} />
       <CenterSection className="grid grid-cols-2 gap-10 p-6">
-        <BusinessForm />
+        <DiningForm />
         <div className="col-span-2 grid place-content-end gap-3 lg:col-span-1">
           <h2 className="font-heading text-4xl font-extrabold text-secondary">
-            Kashmir Craft Business Directory
+            Kashmir Dining Voyage
           </h2>
           <h3 className="font-heading text-xl font-bold">
-            Comprehensive resource connecting artisans, businesses, & consumers
-            within the Kashmiri craft industry.
+            A gastronomic journey through Kashmir&apos;s culinary heritage
           </h3>
           <p className="font-text">
-            The Kashmir Craft Business Directory is an invaluable tool designed
-            to help consumers find and purchase authentic, high-quality Kashmiri
-            crafts from verified artisans and businesses. Advanced search and
-            filter options allow you to quickly find specific crafts or artisans
-            based on your preferences. Find artisans and craft businesses near
-            you, making it easy to shop locally and support genuine artisan
-            community. Shop with confidence knowing that all products are
-            evaluated for authenticity and quality by Hamadan Craft Revival
-            Foundation.
+            Our Dining Voyage offers an unparalleled culinary adventure across Kashmir&apos;s 
+            most breathtaking locations. From floating restaurants on Dal Lake to 
+            mountaintop dining with panoramic views, each experience combines authentic 
+            Kashmiri cuisine with unforgettable settings. Savor traditional Wazwan feasts, 
+            organic farm-to-table meals, and modern Kashmiri fusion - all prepared by 
+            master chefs using locally-sourced ingredients.
           </p>
         </div>
         <div className="col-span-2 grid gap-8">
           <h2 className="text-center font-heading text-4xl font-extrabold">
-            Why Choose{" "}
-            <strong className="text-secondary">
-              Kashmir Craft Business Directory
-            </strong>
+            Why Choose <strong className="text-secondary">Dining Voyage</strong>
           </h2>
           <div className="flex justify-center">
             <p className="max-w-2xl text-center font-text text-sm">
-              The directory serve as a trusted source for authentic Kashmiri
-              handicrafts, helping to combat the issue of counterfeit products.
+              We redefine culinary tourism by combining exceptional food with extraordinary 
+              locations and cultural immersion.
             </p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {BusinessCardData.map((benefit, index) => (
+            {DiningCardData.map((benefit, index) => (
               <div
                 className="group grid place-items-center gap-4 rounded-lg border p-6 transition-colors hover:bg-primary"
                 key={index}

@@ -159,3 +159,169 @@ export const JoinCard = [
     link: "/join-us/language",
   },
 ];
+
+
+export const RetreatCardData = [
+  {
+    image: "/icons/leaf.svg",
+    title: "100% Solar Powered",
+    des: "Our entire retreat operates on renewable solar energy, reducing our carbon footprint while providing all the comforts you expect. Enjoy modern amenities with minimal environmental impact.",
+  },
+  {
+    image: "/icons/farm.svg",
+    title: "Organic Farm-to-Table",
+    des: "Savor meals prepared with organic ingredients grown in our on-site gardens or sourced from local farmers. We practice seasonal eating &amp; zero-waste cooking techniques to honor nature&apos;s bounty.",
+  },
+  {
+    image: "/icons/eco-home.svg",
+    title: "Sustainable Architecture",
+    des: "Stay in accommodations built with locally-sourced, natural materials like stone, wood, and clay. Our buildings blend traditional Kashmiri techniques with modern eco-friendly innovations.",
+  },
+  {
+    image: "/icons/water.svg",
+    title: "Water Conservation",
+    des: "We implement rainwater harvesting, greywater recycling, and low-flow fixtures to minimize water usage. Our spring-fed pools use natural filtration systems instead of chemicals.",
+  },
+  {
+    image: "/icons/tree.svg",
+    title: "Nature Immersion",
+    des: "Participate in guided forest bathing, bird watching, and organic farming experiences. Our retreat is designed to help you reconnect with nature&apos;s rhythms &amp; find inner peace.",
+  },
+  {
+    image: "/icons/community.svg",
+    title: "Community Support",
+    des: "We employ &amp; train local residents, source from nearby artisans, and contribute to conservation projects. Your stay directly benefits Kashmir&apos;s people &amp; environment.",
+  }
+];
+
+export const DiningCardData = [
+  {
+    image: "/icons/chef.svg",
+    title: "Master Chefs &amp; Authentic Recipes",
+    des: "Our chefs preserve centuries-old culinary traditions while adding contemporary flair. Each dish tells a story of Kashmir&apos;s rich gastronomic heritage.",
+  },
+  {
+    image: "/icons/location.svg",
+    title: "Breathtaking Dining Locations",
+    des: "From floating restaurants to mountain peaks, each venue offers unforgettable ambiance that complements the dining experience.",
+  },
+  {
+    image: "/icons/farm.svg",
+    title: "Locally-Sourced Ingredients",
+    des: "We partner with organic farms &amp; local producers to bring you the freshest seasonal ingredients Kashmir has to offer.",
+  },
+  {
+    image: "/icons/spice.svg",
+    title: "Spice &amp; Tea Pairings",
+    des: "Enhance your meal with our expert-selected spice combinations &amp; premium Kashmiri tea infusions.",
+  },
+  {
+    image: "/icons/culture.svg",
+    title: "Cultural Storytelling",
+    des: "Each course comes with stories about its history &amp; significance in Kashmiri culture from our knowledgeable hosts.",
+  },
+  {
+    image: "/icons/custom.svg",
+    title: "Customizable Experiences",
+    des: "Tailor your dining voyage with special requests, from romantic setups to family-style feasts.",
+  }
+];
+
+export const TransitCardData = [
+  {
+    image: "/icons/ev.svg",
+    title: "100% Electric Options",
+    des: "Our fleet includes modern EVs with extended range, charged using renewable energy sources. Enjoy silent, emission-free travel through Kashmir&apos;s pristine landscapes.",
+  },
+  {
+    image: "/icons/offset.svg",
+    title: "Carbon Offset Included",
+    des: "All rides include certified carbon offsets supporting Himalayan reforestation. We calculate &amp; neutralize emissions for even our biofuel vehicles.",
+  },
+  {
+    image: "/icons/wifi.svg",
+    title: "Eco-Conscious Amenities",
+    des: "Free WiFi, device charging, and filtered water stations in all vehicles to reduce single-use plastic bottle consumption during your journey.",
+  },
+  {
+    image: "/icons/guide.svg",
+    title: "Green Route Guidance",
+    des: "Our drivers take the most eco-friendly routes and share tips for sustainable tourism at your destination.",
+  },
+  {
+    image: "/icons/community.svg",
+    title: "Supports Local Economy",
+    des: "We train &amp; employ local drivers at fair wages, and a portion of each fare goes to community sustainability projects.",
+  },
+  {
+    image: "/icons/map.svg",
+    title: "Smart Scheduling",
+    des: "Our route optimization reduces empty miles, and shared rides maximize vehicle occupancy for minimal environmental impact.",
+  }
+];
+
+export const PlannerCardData = [
+  {
+    image: "/icons/itinerary.svg",
+    title: "Tailored Itineraries",
+    des: "We design trips based on your unique interests, whether you're a foodie, adventurer, culture enthusiast, or wellness seeker. No generic tours &amp;mdash; only personalized experiences.",
+  },
+  {
+    image: "/icons/local.svg",
+    title: "Local Insight",
+    des: "Our planners are Kashmir natives who know hidden gems beyond tourist spots. Get access to authentic experiences most visitors never discover.",
+  },
+  {
+    image: "/icons/sync.svg",
+    title: "Seamless Coordination",
+    des: "We handle all bookings &amp; logistics - accommodations, transit, activities, dining - in one coordinated plan with 24/7 local support.",
+  },
+  {
+    image: "/icons/budget.svg",
+    title: "Budget Optimization",
+    des: "We maximize your experience at every price point, knowing where to splurge and where to save without compromising quality.",
+  },
+  {
+    image: "/icons/eco.svg",
+    title: "Sustainable Focus",
+    des: "We prioritize eco-friendly options that support local communities and minimize environmental impact throughout your journey.",
+  },
+  {
+    image: "/icons/flexible.svg",
+    title: "Flexible Planning",
+    des: "Adjust your itinerary anytime with our real-time booking system. Spontaneous detour? We'll rearrange everything seamlessly.",
+  }
+];
+
+export const LanguageCardData = [
+  {
+    image: "/icons/interpretation.svg",
+    title: "Certified Interpreters",
+    des: "Our professionals are fluent in both languages and understand cultural nuances for accurate communication.",
+  },
+  {
+    image: "/icons/clock.svg",
+    title: "Quick Response",
+    des: "Most interpretation requests can be arranged with just 24 hours notice, with emergency services available.",
+  },
+  {
+    image: "/icons/culture.svg",
+    title: "Cultural Mediation",
+    des: "We help navigate cultural differences beyond just words to create meaningful connections.",
+  },
+  {
+    image: "/icons/document.svg",
+    title: "Document Services",
+    des: "Official translations of permits, menus, signs, and other materials with certification available.",
+  },
+  {
+    image: "/icons/guide.svg",
+    title: "Tour Specialists",
+    des: "Interpreters trained in local history and attractions to enhance your sightseeing experience.",
+  },
+  {
+    image: "/icons/medical.svg",
+    title: "Medical Terminology",
+    des: "Specialized interpreters for healthcare situations with knowledge of medical vocabulary.",
+  }
+];

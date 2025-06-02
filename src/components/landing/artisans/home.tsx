@@ -1,7 +1,7 @@
-import Image from "next/image";
+// import Image from "next/image";
 import { Banner } from "~/components/common/banner";
 import { CenterSection } from "~/components/common/center-section";
-import { ArtsayComingSoon } from "~/components/common/coming-soon";
+// import { ArtsayComingSoon } from "~/components/common/coming-soon";
 import { ArtisanForm } from "~/components/landing/artisans/form";
 import { landingBanner } from "~/constants/banner";
 import { ArtisanCardData } from "~/constants/card";
@@ -11,9 +11,9 @@ export const ArtisanLanding = () => {
     <>
       <Banner banner={landingBanner} />
       <CenterSection className="grid grid-cols-2 gap-10 p-6">
-        <div className="col-span-2">
+        {/* <div className="col-span-2">
           <ArtsayComingSoon />
-        </div>
+        </div> */}
         <ArtisanForm />
         <div className="col-span-2 grid place-content-end gap-3 lg:col-span-1">
           <h2 className="font-heading text-4xl font-extrabold text-secondary">
@@ -55,7 +55,7 @@ export const ArtisanLanding = () => {
                 className="group grid place-items-center gap-4 rounded-lg border p-6 transition-colors hover:bg-primary"
                 key={index}
               >
-                <div className="relative h-16 w-16">
+                {/* <div className="relative h-16 w-16">
                   <Image
                     src={benefit.image}
                     alt={benefit.title}
@@ -63,7 +63,7 @@ export const ArtisanLanding = () => {
                     className="transition-colors [&>stroke]:fill-white group-hover:[&>stroke]:fill-white"
                     sizes="100%"
                   />
-                </div>
+                </div> */}
                 <h4 className="max-w-[13rem] text-center font-heading text-xl font-bold text-primary transition-colors group-hover:text-white">
                   {benefit.title}
                 </h4>

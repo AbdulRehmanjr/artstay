@@ -1,4 +1,4 @@
-import Image from "next/image";
+// import Image from "next/image";
 import { CenterSection } from "~/components/common/center-section";
 import { SafariCardData } from "~/constants/card";
 import { SafariForm } from "~/components/landing/safari/form";
@@ -50,7 +50,7 @@ export const SafariLanding = () => {
                 className="group grid place-items-center gap-4 rounded-lg border p-6 transition-colors hover:bg-primary"
                 key={index}
               >
-                <div className="relative h-16 w-16">
+                {/* <div className="relative h-16 w-16">
                   <Image
                     src={benefit.image}
                     alt={benefit.title}
@@ -58,7 +58,7 @@ export const SafariLanding = () => {
                     className="transition-colors [&>stroke]:fill-white group-hover:[&>stroke]:fill-white"
                     sizes="100%"
                   />
-                </div>
+                </div> */}
                 <h4 className="max-w-[13rem] text-center font-heading text-xl font-bold text-primary transition-colors group-hover:text-white">
                   {benefit.title}
                 </h4>

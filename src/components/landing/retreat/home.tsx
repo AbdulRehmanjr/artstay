@@ -1,52 +1,45 @@
 // import Image from "next/image";
 import { CenterSection } from "~/components/common/center-section";
-import { BusinessCardData } from "~/constants/card";
 import { Banner } from "~/components/common/banner";
-import { businessBanner } from "~/constants/banner";
-import { BusinessForm } from "~/components/landing/business/form";
+import { retreatBanner } from "~/constants/banner";
+import { RetreatForm } from "~/components/landing/retreat/form";
+import { RetreatCardData } from "~/constants/card";
 
-export const BusinessLanding = () => {
+export const RetreatLanding = () => {
   return (
     <>
-      <Banner banner={businessBanner} />
+      <Banner banner={retreatBanner} />
       <CenterSection className="grid grid-cols-2 gap-10 p-6">
-        <BusinessForm />
+        <RetreatForm />
         <div className="col-span-2 grid place-content-end gap-3 lg:col-span-1">
           <h2 className="font-heading text-4xl font-extrabold text-secondary">
-            Kashmir Craft Business Directory
+            Kashmir Eco Retreat
           </h2>
           <h3 className="font-heading text-xl font-bold">
-            Comprehensive resource connecting artisans, businesses, & consumers
-            within the Kashmiri craft industry.
+            Sustainable luxury amidst Kashmir&apos;s pristine nature
           </h3>
           <p className="font-text">
-            The Kashmir Craft Business Directory is an invaluable tool designed
-            to help consumers find and purchase authentic, high-quality Kashmiri
-            crafts from verified artisans and businesses. Advanced search and
-            filter options allow you to quickly find specific crafts or artisans
-            based on your preferences. Find artisans and craft businesses near
-            you, making it easy to shop locally and support genuine artisan
-            community. Shop with confidence knowing that all products are
-            evaluated for authenticity and quality by Hamadan Craft Revival
-            Foundation.
+            Nestled in the heart of Kashmir&apos;s breathtaking landscapes, our Eco Retreat offers 
+            an immersive experience that harmonizes luxury with sustainability. Stay in our 
+            eco-friendly cottages built with local materials, enjoy organic farm-to-table cuisine, 
+            and reconnect with nature through guided eco-tours. We&apos;re committed to preserving 
+            Kashmir&apos;s natural beauty while providing unforgettable experiences that leave minimal 
+            environmental impact.
           </p>
         </div>
         <div className="col-span-2 grid gap-8">
           <h2 className="text-center font-heading text-4xl font-extrabold">
-            Why Choose{" "}
-            <strong className="text-secondary">
-              Kashmir Craft Business Directory
-            </strong>
+            Why Choose Our <strong className="text-secondary">Eco Retreat</strong>
           </h2>
           <div className="flex justify-center">
             <p className="max-w-2xl text-center font-text text-sm">
-              The directory serve as a trusted source for authentic Kashmiri
-              handicrafts, helping to combat the issue of counterfeit products.
+              We combine sustainable practices with authentic Kashmiri hospitality to create 
+              experiences that are good for you and the planet.
             </p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {BusinessCardData.map((benefit, index) => (
+            {RetreatCardData.map((benefit, index) => (
               <div
                 className="group grid place-items-center gap-4 rounded-lg border p-6 transition-colors hover:bg-primary"
                 key={index}

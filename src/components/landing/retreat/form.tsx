@@ -8,41 +8,21 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Button } from "~/components/ui/button";
-import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-
-const destinations = [
-  {
-    id: "khanqah",
-    label: "Khanqah & Zadibal",
-    description: "woodwork, papier-mache sozn embroidery",
-  },
-  {
-    id: "safakadal",
-    label: "Safakadal & Eidgah",
-    description:
-      "chain-stitch embroidery, pashmina weavers, woodcarvers. aari embroidery.",
-  },
-  {
-    id: "raniwari",
-    label: "Raniwari, Kathi Darwaza, & Aali Kadal",
-    description: "Pottery, Walnut Woodcarvings, Pashmina dyeing.",
-  },
-  {
-    id: "nallah",
-    label: "Nallah Mar & Amda Kadal",
-    description: "Zari Embroidery and Namdhakari, Copperware and Silverware.",
-  },
-];
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 
 const formSchema = z
   .object({
-    destinations: z
-      .array(z.string())
-      .min(1, "Please select at least one destination"),
+    accommodationType: z.string().min(1, "Please select accommodation type"),
     checkIn: z.string().min(1, "Check-in date is required"),
     checkOut: z.string().min(1, "Check-out date is required"),
     adults: z.number().min(1, "At least one adult is required"),
@@ -53,11 +33,11 @@ const formSchema = z
     path: ["checkOut"],
   });
 
-export const SafariForm = () => {
+export const RetreatForm = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      destinations: [],
+      accommodationType: "",
       checkIn: "",
       checkOut: "",
       adults: 1,
@@ -70,54 +50,43 @@ export const SafariForm = () => {
   };
 
   return (
-    <div className="z-[100] mx-auto -mt-16 w-full max-w-xl rounded-lg bg-white shadow-lg">
-      <div className="rounded-t-lg border-2 border-white bg-primary p-4 text-white">
+    <div className="z-[100] -mt-16 mx-auto w-full max-w-xl rounded-lg bg-white shadow-lg">
+      <div className="rounded-t-lg bg-primary p-4 text-white border-2 border-white">
         <h2 className="text-center text-xl font-bold">
-          Find A Craft Safari Cluster
+          Book Your Eco Retreat
         </h2>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-6">
-          <div>
-            <FormLabel className="mb-3 block text-gray-600">
-              Select One or More Safari Destinations.*
-            </FormLabel>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {destinations.map((destination) => (
-                <div key={destination.id} className="space-y-2">
-                  <div className="flex items-start space-x-2">
-                    <Checkbox
-                      id={destination.id}
-                      onCheckedChange={(checked) => {
-                        const current = form.getValues("destinations");
-                        if (checked) {
-                          form.setValue("destinations", [
-                            ...current,
-                            destination.id,
-                          ]);
-                        } else {
-                          form.setValue(
-                            "destinations",
-                            current.filter((id) => id !== destination.id),
-                          );
-                        }
-                      }}
-                    />
-                    <label
-                      htmlFor={destination.id}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      {destination.label}
-                    </label>
-                  </div>
-                  <p className="ml-6 text-sm text-gray-500">
-                    {destination.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
+          <FormField
+            control={form.control}
+            name="accommodationType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-600">
+                  Accommodation Type*
+                </FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="– Select Accommodation –" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="eco-cottage">Eco Cottage</SelectItem>
+                    <SelectItem value="luxury-tent">Luxury Eco Tent</SelectItem>
+                    <SelectItem value="treehouse">Treehouse</SelectItem>
+                    <SelectItem value="family-villa">Family Eco Villa</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <div className="grid grid-cols-2 gap-4">
             <FormField
@@ -155,7 +124,7 @@ export const SafariForm = () => {
               name="adults"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Adult</FormLabel>
+                  <FormLabel>Adults</FormLabel>
                   <FormControl>
                     <select
                       className="w-full rounded-md border p-2"
@@ -199,7 +168,9 @@ export const SafariForm = () => {
             />
           </div>
 
-          <Button type="submit" className="w-full">FIND NOW</Button>
+          <Button type="submit" className="w-full">
+            CHECK AVAILABILITY
+          </Button>
         </form>
       </Form>
     </div>
