@@ -32,12 +32,12 @@ const links = [
   { href: "/safari", title: "Craft Safari" },
   { href: "/fair", title: "Craft Fair" },
   { href: "/shop", title: "Craft Store" },
-  { href: "/", title: "Craft Documenter" },
-  { href: "/", title: "Eco Retreat" },
+  { href: "/documentary", title: "Craft Documenter" },
+  { href: "/eco-retreat", title: "Eco Retreat" },
   { href: "/dining", title: "Dining Voyage" },
   { href: "/", title: "Eco Transit" },
-  { href: "/", title: "Travel Planner" },
-  { href: "/", title: "Language Services" },
+  { href: "/travel", title: "Travel Planner" },
+  { href: "/language", title: "Language Services" },
 ];
 
 export const Header: FC<HeaderProps> = ({ disabled = false }) => {

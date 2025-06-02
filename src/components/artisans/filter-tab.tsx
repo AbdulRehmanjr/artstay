@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
 import {
@@ -15,6 +15,7 @@ import { Input } from "~/components/ui/input";
 import { Search } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { api } from "~/trpc/react";
 
 // Define the filter form values type
 export type ArtisanFilterValues = {
@@ -28,9 +29,6 @@ export type ArtisanFilterValues = {
   training: string;
   certification: string;
   recognition: string;
-  minFee: string;
-  maxFee: string;
-  location: string;
 };
 
 
@@ -39,27 +37,35 @@ export const ArtisanFilter = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState("craft");
-
-  // Set up react-hook-form
+  
   const { control, handleSubmit, watch, setValue } = useForm<ArtisanFilterValues>({
     defaultValues: {
       craft: "",
       subCraft: "",
       checkIn: "",
       checkOut: "",
-      rating: [5, 4, 3, 2, 1], // Default all checked
-      expertise: ["GRANDMASTER", "MASTER_CRAFTSMAN", "CRAFTMAN", "APPRENTICE"], // Updated to uppercase
+      rating: [5, 4, 3, 2, 1], 
+      expertise: ["GRANDMASTER", "MASTER", "CRAFTMAN", "APPRENTICE"],
       education: "",
       training: "",
       certification: "",
       recognition: "",
-      minFee: "",
-      maxFee: "",
-      location: "",
     },
   });
 
-  // Initialize form with URL params if any
+  const [crafts] = api.craft.getAllCrafts.useSuspenseQuery();
+
+  const watchedCraft = useWatch({
+    control: control,
+    name: "craft",
+    defaultValue: "",
+  });
+
+  const subCrafts = api.craft.getSubCraftsByCraftId.useQuery(
+    { craftId: watchedCraft },
+    { enabled: !!watchedCraft } 
+  );
+
   useEffect(() => {
     if (searchParams) {
       const craft = searchParams.get("craft") ?? "";
@@ -73,9 +79,6 @@ export const ArtisanFilter = () => {
       const training = searchParams.get("training") ?? "";
       const certification = searchParams.get("certification") ?? "";
       const recognition = searchParams.get("recognition") ?? "";
-      const minFee = searchParams.get("minFee") ?? "";
-      const maxFee = searchParams.get("maxFee") ?? "";
-      const location = searchParams.get("location") ?? "";
 
       setValue("craft", craft);
       setValue("subCraft", subCraft);
@@ -87,23 +90,15 @@ export const ArtisanFilter = () => {
       setValue("training", training);
       setValue("certification", certification);
       setValue("recognition", recognition);
-      setValue("minFee", minFee);
-      setValue("maxFee", maxFee);
-      setValue("location", location);
     }
   }, [searchParams, setValue]);
 
-
-  // Type-safe checkbox change handler
- // Simpler version without generic typing
-// Function overloads for type safety
 function handleCheckboxChange(field: "rating", value: number): void;
 function handleCheckboxChange(field: "expertise", value: string): void;
 function handleCheckboxChange(field: "rating" | "expertise", value: number | string): void {
   const currentValues = watch(field);
   
   if (Array.isArray(currentValues)) {
-    // Need to use type assertion here because TypeScript can't infer the specific array type
     if (field === "rating") {
       const typedValues = currentValues as number[];
       const valueExists = typedValues.includes(value as number);
@@ -124,7 +119,6 @@ function handleCheckboxChange(field: "rating" | "expertise", value: number | str
 }
 
   const onSubmit = (data: ArtisanFilterValues) => {
-    // Create new URLSearchParams
     const params = new URLSearchParams();
     
     // Only add non-empty values to the URL
@@ -138,9 +132,6 @@ function handleCheckboxChange(field: "rating" | "expertise", value: number | str
     if (data.training) params.set("training", data.training);
     if (data.certification) params.set("certification", data.certification);
     if (data.recognition) params.set("recognition", data.recognition);
-    if (data.minFee) params.set("minFee", data.minFee);
-    if (data.maxFee) params.set("maxFee", data.maxFee);
-    if (data.location) params.set("location", data.location);
 
     // Update URL with filter params
     router.push(`${pathname}?${params.toString()}`);
@@ -158,8 +149,6 @@ function handleCheckboxChange(field: "rating" | "expertise", value: number | str
             { id: "expertise", label: "Expertise" },
             { id: "rating", label: "Rating" },
             { id: "credentials", label: "Credentials" },
-            { id: "fees", label: "Fees" },
-            { id: "location", label: "Location" },
           ].map((tab) => (
             <TabsTrigger
               key={tab.id}
@@ -185,10 +174,11 @@ function handleCheckboxChange(field: "rating" | "expertise", value: number | str
                         <SelectValue placeholder="-- Select Craft --" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="1">Boutique Craft</SelectItem>
-                        <SelectItem value="2">Wood Craft</SelectItem>
-                        <SelectItem value="3">Decor Craft</SelectItem>
-                        <SelectItem value="4">Carpet & Rug Craft</SelectItem>
+                        {crafts.map((craft) => (
+                          <SelectItem key={craft.craftId} value={craft.craftId}>
+                            {craft.craftName}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   )}
@@ -206,11 +196,21 @@ function handleCheckboxChange(field: "rating" | "expertise", value: number | str
                         <SelectValue placeholder="-- Select Sub Craft --" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="1">Zalakdozi (Chain Stitch)</SelectItem>
-                        <SelectItem value="2">Aarikam (hook work)</SelectItem>
-                        <SelectItem value="3">Kashida Kari (Kashmiri Embroidery)</SelectItem>
-                        <SelectItem value="4">Pashmina & Kanis (Warp Weaving)</SelectItem>
-                        <SelectItem value="5">Zardozi (Metal Embroidery)</SelectItem>
+                        {subCrafts.data?.map((subCraft) => (
+                          <SelectItem key={subCraft.subCraftId} value={subCraft.subCraftId}>
+                            {subCraft.subCraftName}
+                          </SelectItem>
+                        ))}
+                        {subCrafts.isLoading && (
+                          <SelectItem value="loading" disabled>
+                            Loading...
+                          </SelectItem>
+                        )}
+                        {!watchedCraft && (
+                          <SelectItem value="loading" disabled>
+                            Select a craft first
+                          </SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   )}
@@ -364,63 +364,6 @@ function handleCheckboxChange(field: "rating" | "expertise", value: number | str
                   />
                 </div>
               ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="fees">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block">Minimum</label>
-                <Controller
-                  name="minFee"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      type="number"
-                      placeholder="Minimum"
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-              </div>
-              <div>
-                <label className="mb-2 block">Maximum</label>
-                <Controller
-                  name="maxFee"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      type="number"
-                      placeholder="Maximum"
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="location">
-            <div>
-              <label className="mb-2 block">Location</label>
-              <Controller
-                name="location"
-                control={control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="-- Select Location --" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">Location 1</SelectItem>
-                      <SelectItem value="2">Location 2</SelectItem>
-                      <SelectItem value="3">Location 3</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
             </div>
           </TabsContent>
 

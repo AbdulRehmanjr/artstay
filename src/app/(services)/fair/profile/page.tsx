@@ -5,17 +5,12 @@ import {
   MapPin,
   Star,
   Clock,
-  Badge,
   Binoculars,
-  Calendar,
-  CheckCircle2,
   Compass,
   Languages,
-  Building,
-  Map,
 } from "lucide-react";
-import { ArtisanCalendar } from "~/components/artisans/artisan-calendar";
 import { HeadlingUnderline } from "~/components/common/heading-underline";
+import { FairEvent } from "~/components/fair/fair-event";
 
 
 type PageProps = {
@@ -41,8 +36,8 @@ export default async function FairPage({ searchParams }: PageProps) {
               fill
               sizes="100%"
             />
-            <div className="absolute bottom-0 left-0 right-0 h-[4rem] bg-gradient-to-t from-[#0088cc] to-transparent p-4">
-              <h2 className="text-center text-3xl font-semibold text-white">
+            <div className="absolute bottom-0 left-0 right-0 h-[3rem] bg-gradient-to-t from-[#0088cc] to-transparent p-4">
+              <h2 className="text-center text-sm font-semibold text-white">
                 {fair.firstName} {fair.lastName}
               </h2>
             </div>
@@ -51,7 +46,7 @@ export default async function FairPage({ searchParams }: PageProps) {
             {[
               { id: "general", label: "General Info." },
               { id: "events", label: "Fair Events" },
-              { id: "booking", label: "Booking" },
+
             ].map((tab) => (
               <TabsTrigger
                 key={tab.id}
@@ -113,7 +108,9 @@ export default async function FairPage({ searchParams }: PageProps) {
                   <span className="text-xs text-white/70">Specialization</span>
                   <div className="flex items-center gap-2">
                     <Binoculars className="h-5 w-5 text-green-400" />
-                    <span className="text-base font-medium">Fair Management</span>
+                    <span className="text-base font-medium">
+                      Fair Management
+                    </span>
                   </div>
                 </div>
 
@@ -121,7 +118,9 @@ export default async function FairPage({ searchParams }: PageProps) {
                   <span className="text-xs text-white/70">Languages</span>
                   <div className="flex items-center gap-2">
                     <Languages className="h-5 w-5 text-orange-400" />
-                    <span className="text-base font-medium">English, Hindi</span>
+                    <span className="text-base font-medium">
+                      English, Hindi
+                    </span>
                   </div>
                 </div>
 
@@ -146,77 +145,8 @@ export default async function FairPage({ searchParams }: PageProps) {
         <TabsContent value="events" className="grid gap-6">
           <HeadlingUnderline title="Available Fair Events" />
           {fair.FairEvent.map((event) => (
-            <div
-              key={event.eventId}
-              className="rounded-lg bg-white p-6 shadow-md transition-all duration-300 hover:shadow-lg"
-            >
-              <div className="flex flex-col lg:flex-row gap-6">
-                <div className="flex-1">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-heading text-xl font-semibold text-secondary">
-                        {event.title}
-                      </h3>
-                      <p className="text-sm text-gray-500 font-text">{event.organizer}</p>
-                    </div>
-                    <Badge className="bg-primary/10 text-primary">
-                      {new Date(event.startDate).toLocaleDateString()} - {new Date(event.endDate).toLocaleDateString()}
-                    </Badge>
-                  </div>
-
-                  <p className="text-gray-600 mb-6">{event.description}</p>
-
-                  <div className="grid gap-4">
-                    <p className="font-heading text-secondary text-lg">Event Details </p>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-secondary" />
-                      <span className="text-sm text-gray-600">Location: {event.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Building className="h-4 w-4 text-secondary" />
-                      <span className="text-sm text-gray-600">Venue: {event.vanue}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Map className="h-4 w-4 text-secondary" />
-                      <span className="text-sm text-gray-600">
-                        Coordinates: {event.latitude}, {event.longitude}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-secondary" />
-                      <span className="text-sm text-gray-600">Fair Type: {event.fairType}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="lg:w-64 flex flex-col justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">
-                        Created: {new Date(event.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">
-                        Updated: {new Date(event.updatedAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-
-                  <button className="mt-4 w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors">
-                    Register Now
-                  </button>
-                </div>
-              </div>
-            </div>
+            <FairEvent event={event} key={event.eventId} />
           ))}
-        </TabsContent>
-
-        <TabsContent value="booking" className="grid gap-8">
-          <HeadlingUnderline title="Booking" />
-          <ArtisanCalendar />
         </TabsContent>
       </div>
     </Tabs>

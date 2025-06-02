@@ -5,15 +5,13 @@ import {
   MapPin,
   Star,
   Clock,
-  Badge,
   Binoculars,
-  Calendar,
-  CheckCircle2,
   Compass,
   Languages,
 } from "lucide-react";
-import { ArtisanCalendar } from "~/components/artisans/artisan-calendar";
 import { HeadlingUnderline } from "~/components/common/heading-underline";
+import { SafariPackage } from "~/components/safari/package-list";
+import { SafariCalendar } from "~/components/safari/booking/safari-calendar";
 
 type PageProps = {
   searchParams: Promise<{ safariId: string }>;
@@ -38,8 +36,8 @@ export default async function SafariPage({ searchParams }: PageProps) {
               fill
               sizes="100%"
             />
-            <div className="absolute bottom-0 left-0 right-0 h-[4rem] bg-gradient-to-t from-[#9a5d33] to-transparent p-4">
-              <h2 className="text-center text-3xl font-semibold text-white">
+            <div className="absolute bottom-0 left-0 right-0 h-[3rem] bg-gradient-to-t from-[#0088cc] to-transparent p-4">
+              <h2 className="text-center text-sm font-semibold text-white">
                 {safari.firstName} {safari.lastName}
               </h2>
             </div>
@@ -110,7 +108,9 @@ export default async function SafariPage({ searchParams }: PageProps) {
                   <span className="text-xs text-white/70">Specialization</span>
                   <div className="flex items-center gap-2">
                     <Binoculars className="h-5 w-5 text-green-400" />
-                    <span className="text-base font-medium">Wildlife Photography</span>
+                    <span className="text-base font-medium">
+                      Wildlife Photography
+                    </span>
                   </div>
                 </div>
 
@@ -118,7 +118,9 @@ export default async function SafariPage({ searchParams }: PageProps) {
                   <span className="text-xs text-white/70">Languages</span>
                   <div className="flex items-center gap-2">
                     <Languages className="h-5 w-5 text-orange-400" />
-                    <span className="text-base font-medium">English, Hindi</span>
+                    <span className="text-base font-medium">
+                      English, Hindi
+                    </span>
                   </div>
                 </div>
 
@@ -143,65 +145,13 @@ export default async function SafariPage({ searchParams }: PageProps) {
         <TabsContent value="packages" className="grid gap-6">
           <HeadlingUnderline title="Available Safari Tours" />
           {safari.SafariTour.map((tour) => (
-            <div
-              key={tour.tourId}
-              className="rounded-lg bg-white p-6 shadow-md transition-all duration-300 hover:shadow-lg"
-            >
-              <div className="flex flex-col lg:flex-row gap-6">
-                <div className="flex-1">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-heading text-xl font-semibold text-secondary">
-                        {tour.title}
-                      </h3>
-                      <p className="text-sm text-gray-500 font-text">{tour.operator}</p>
-                    </div>
-                    <Badge className="bg-primary/10 text-primary">
-                      {tour.duration}
-                    </Badge>
-                  </div>
-
-                  <p className="text-gray-600 mb-6">{tour.description}</p>
-
-                  <div className="grid gap-4">
-                    <p className="font-heading text-secondary text-lg">Features </p>
-                    {tour.features.map((feature, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-secondary" />
-                        <span className="text-sm text-gray-600">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="lg:w-64 flex flex-col justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Price:</span>
-                      <span className="text-xl font-semibold text-primary">
-                        ${tour.fee.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">
-                        Updated: {new Date(tour.updatedAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-
-                  <button className="mt-4 w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors">
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            </div>
+            <SafariPackage tour={tour} key={tour.tourId} />
           ))}
         </TabsContent>
 
         <TabsContent value="booking" className="grid gap-8">
           <HeadlingUnderline title="Booking" />
-          <ArtisanCalendar />
+          <SafariCalendar />
         </TabsContent>
       </div>
     </Tabs>

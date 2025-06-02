@@ -1,217 +1,112 @@
 "use client";
 
 import { api } from "~/trpc/react";
-import { useIntersection } from "@mantine/hooks";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
 import {
   MapPin,
   Utensils,
-  Search,
-  Filter,
-  ChevronDown,
   Package,
 } from "lucide-react";
 import dayjs from "dayjs";
-import { Input } from "~/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-
 
 const getPriceRangeSymbol = (priceRange: string) => {
-    switch (priceRange) {
-      case "$":
-        return "Inexpensive";
-      case "$$":
-        return "Moderate";
-      case "$$$":
-        return "Expensive";
-      case "$$$$":
-        return "Luxury";
-      default:
-        return priceRange; 
-    }
-  };
+  switch (priceRange) {
+    case "$":
+      return "Inexpensive";
+    case "$$":
+      return "Moderate";
+    case "$$$":
+      return "Expensive";
+    case "$$$$":
+      return "Luxury";
+    default:
+      return priceRange; 
+  }
+};
 
 export const RestaurantList = () => {
   const router = useRouter();
-//   const [searchTerm, setSearchTerm] = useState("");
-//   const [selectedCuisine, setSelectedCuisine] = useState<string | null>(null);
-//   const [sortBy, setSortBy] = useState<string>("newest");
-//   const [priceRange, setPriceRange] = useState<string | null>(null);
+  const searchParams = useSearchParams();
   
-  const { ref, entry } = useIntersection({
-    root: null,
-    threshold: 0.1,
-    rootMargin: "100px",
-  });
+  const searchFilter = searchParams.get("search");
+  const cuisineFilter = searchParams.get("cuisine");
+  const priceRangeFilter = searchParams.get("priceRange");
+  const locationFilter = searchParams.get("location");
 
-  const [restaurantData, { fetchNextPage, hasNextPage, isFetchingNextPage, refetch }] =
-    api.dining.getAllRestaurants.useSuspenseInfiniteQuery(
-      {
-        limit: 8,
-        // cursor: null,
-        // Additional parameters could be added to your API for filtering:
-        // search: searchTerm,
-        // cuisine: selectedCuisine,
-        // sortBy: sortBy,
-        // priceRange: priceRange,
-      },
-      {
-        getNextPageParam: (lastPage) => {
-          if (!lastPage.metadata.hasNextPage) return undefined;
-          return Number(lastPage.metadata.cursor);
-        },
-      },
-    );
+  const [restaurants] = api.dining.getAllRestaurants.useSuspenseQuery();
 
-  useEffect(() => {
-    if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
-      void fetchNextPage();
+  const filteredRestaurants = useMemo(() => {
+    if (
+      !searchFilter &&
+      !cuisineFilter &&
+      !priceRangeFilter &&
+      !locationFilter
+    ) {
+      return restaurants;
     }
-  }, [entry?.isIntersecting, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-//   // Re-fetch when filters change
-//   useEffect(() => {
-//     void refetch();
-//   }, [searchTerm, selectedCuisine, sortBy, priceRange, refetch]);
+    return restaurants.filter((restaurant) => {
+      if (
+        searchFilter &&
+        !(
+          restaurant.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+          restaurant.description.toLowerCase().includes(searchFilter.toLowerCase())
+        )
+      ) {
+        return false;
+      }
 
-  const restaurants = useMemo(
-    () => restaurantData?.pages.flatMap((page) => page.dinings) ?? [],
-    [restaurantData],
-  );
+      if (cuisineFilter && !restaurant.cuisine.includes(cuisineFilter)) {
+        return false;
+      }
+
+      if (priceRangeFilter && restaurant.priceRange !== priceRangeFilter) {
+        return false;
+      }
+
+      if (
+        locationFilter &&
+        !restaurant.location.toLowerCase().includes(locationFilter.toLowerCase())
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [
+    restaurants,
+    searchFilter,
+    cuisineFilter,
+    priceRangeFilter,
+    locationFilter,
+  ]);
 
   return (
-    <div className="px-4 py-8">      
-      {/* Search and Filters */}
-      {/* <div className="mb-8 space-y-4">
-        <div className="flex flex-col space-y-4 md:flex-row md:items-center md:space-x-4 md:space-y-0">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <Input
-              placeholder="Search for restaurants or cuisines..."
-              className="pl-10"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          
-          <Select onValueChange={(value) => setSelectedCuisine(value === "all" ? null : value)}>
-            <SelectTrigger className="w-full md:w-[200px]">
-              <SelectValue placeholder="Cuisine Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Cuisines</SelectItem>
-
-              <SelectItem value="indian">Indian</SelectItem>
-              <SelectItem value="chinese">Chinese</SelectItem>
-              <SelectItem value="italian">Italian</SelectItem>
-              <SelectItem value="mexican">Mexican</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Select onValueChange={(value) => setSortBy(value)}>
-            <SelectTrigger className="w-full md:w-[150px]">
-              <SelectValue placeholder="Sort By" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Newest First</SelectItem>
-              <SelectItem value="oldest">Oldest First</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full md:w-auto">
-                <Filter className="mr-2 h-4 w-4" />
-                Price Range
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => setPriceRange(null)}>
-                  All Price Ranges
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setPriceRange("budget")}>
-                  Inexpensive ($)
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setPriceRange("moderate")}>
-                  Moderate ($$)
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setPriceRange("expensive")}>
-                  Expensive ($$$)
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setPriceRange("luxury")}>
-                  Luxury ($$$$)
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          {selectedCuisine && (
-            <Badge variant="secondary" className="flex items-center gap-1">
-              Cuisine: {selectedCuisine}
-              <button 
-                onClick={() => setSelectedCuisine(null)} 
-                className="ml-1 rounded-full p-1 hover:bg-gray-200"
-              >
-                ×
-              </button>
-            </Badge>
+    <div className="px-4 py-8">
+      {((searchFilter ?? false) || (cuisineFilter ?? false) || (priceRangeFilter ?? false) || locationFilter) && (
+        <div className="mb-6 flex flex-wrap gap-2">
+          <span className="text-sm font-medium">Active filters:</span>
+          {searchFilter && (
+            <Badge variant="secondary">Search: {searchFilter}</Badge>
           )}
-          
-          {priceRange && (
-            <Badge variant="secondary" className="flex items-center gap-1">
-              {priceRange === "budget" ? "Inexpensive ($)" : 
-               priceRange === "moderate" ? "Moderate ($$)" : 
-               priceRange === "expensive" ? "Expensive ($$$)" : "Luxury ($$$$)"}
-              <button 
-                onClick={() => setPriceRange(null)} 
-                className="ml-1 rounded-full p-1 hover:bg-gray-200"
-              >
-                ×
-              </button>
-            </Badge>
+          {cuisineFilter && (
+            <Badge variant="secondary">Cuisine: {cuisineFilter}</Badge>
           )}
-          
-          {(selectedCuisine ?? priceRange) && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => {
-                setSelectedCuisine(null);
-                setPriceRange(null);
-              }}
-              className="text-xs"
-            >
-              Clear All
-            </Button>
+          {priceRangeFilter && (
+            <Badge variant="secondary">Price: {getPriceRangeSymbol(priceRangeFilter)}</Badge>
+          )}
+          {locationFilter && (
+            <Badge variant="secondary">Location: {locationFilter}</Badge>
           )}
         </div>
-      </div> */}
+      )}
 
-      {/* Restaurant Grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {restaurants.map((restaurant, index) => (
+        {filteredRestaurants.map((restaurant, index) => (
           <Card
             key={restaurant.restaurantId ?? index}
             className="group cursor-pointer overflow-hidden bg-white transition-all duration-300 hover:shadow-xl"
@@ -229,7 +124,6 @@ export const RestaurantList = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               </div>
               
-              {/* Price level */}
               <div className="absolute bottom-3 right-3">
                 <Badge variant="outline" className="bg-white/90 font-mono text-gray-800">
                   {getPriceRangeSymbol(restaurant.priceRange)}
@@ -249,14 +143,18 @@ export const RestaurantList = () => {
                 {restaurant.description}
               </p>
               
-              {/* Cuisine tags */}
               <div className="mb-3 flex flex-wrap gap-1">
-                {restaurant.cuisine?.map((cuisineItem, i) => (
+                {restaurant.cuisine?.slice(0, 3).map((cuisineItem, i) => (
                   <Badge key={i} variant="secondary" className="text-xs">
                     <Utensils className="mr-1 h-3 w-3" />
                     {cuisineItem}
                   </Badge>
                 ))}
+                {restaurant.cuisine?.length > 3 && (
+                  <Badge variant="secondary" className="text-xs">
+                    +{restaurant.cuisine.length - 3} more
+                  </Badge>
+                )}
               </div>
               
               <div className="flex items-center text-xs text-gray-600">
@@ -268,38 +166,13 @@ export const RestaurantList = () => {
         ))}
       </div>
       
-      {/* {restaurants.length === 0 && !isFetchingNextPage && (
+      {filteredRestaurants.length === 0 && (
         <div className="mt-8 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 p-8 text-center">
           <Package className="mb-4 h-12 w-12 text-gray-400" />
           <h3 className="mb-2 text-lg font-medium text-gray-900">No restaurants found</h3>
           <p className="text-gray-500">Try adjusting your search or filter criteria</p>
-          <Button 
-            variant="outline" 
-            className="mt-4"
-            onClick={() => {
-              setSearchTerm("");
-              setSelectedCuisine(null);
-              setPriceRange(null);
-              setSortBy("newest");
-            }}
-          >
-            Reset All Filters
-          </Button>
         </div>
-      )} */}
-      
-      {/* Loading spinner and end of content indicator */}
-      <div ref={ref} className="mt-8 flex justify-center">
-        {isFetchingNextPage ? (
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        ) : hasNextPage ? (
-          <div className="h-8" />
-        ) : restaurants.length > 0 ? (
-          <div className="rounded-lg border border-gray-200 bg-gray-50 px-6 py-3 text-center text-sm text-gray-500">
-            You&apos;ve reached the end of the list
-          </div>
-        ) : null}
-      </div>
+      )}
     </div>
   );
 };

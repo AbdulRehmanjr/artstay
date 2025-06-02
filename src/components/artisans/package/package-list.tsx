@@ -90,7 +90,7 @@ export const ArtisanPackage = ({
                   Updated {dayjs(pkg.updatedAt).format("MMM D, YYYY")}
                 </span>
               </div>
-              <SelectPackage packageId={pkg.packageId} duration={pkg.duration} />
+              <SelectPackage packageId={pkg.packageId} duration={pkg.duration} amount={pkg.price} title={pkg.title} />
             </div>
           </CardContent>
         </Card>

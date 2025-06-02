@@ -136,3 +136,111 @@ export const artisanBanner = [
     buttonText: "Explore more",
   },
 ]
+
+export const storeBanner = [
+  {
+    title: "Authentic Kashmiri Handicrafts",
+    subtitle: "Direct from artisans to your home",
+    buttonText: "Shop Now",
+  },
+  {
+    title: "Luxury Pashmina Shawls",
+    subtitle: "Handwoven with generations of expertise",
+    buttonText: "Browse Collection",
+  },
+  {
+    title: "Exquisite Wood Carvings",
+    subtitle: "Traditional walnut wood craftsmanship at its finest",
+    buttonText: "View Products",
+  },
+];
+
+export const retreatBanner = [
+  {
+    title: "Sustainable Luxury in Kashmir",
+    subtitle: "Eco-friendly accommodations with breathtaking mountain views",
+    buttonText: "Book Your Stay",
+  },
+  {
+    title: "Nature Immersion Experiences",
+    subtitle: "Guided eco-tours, organic farming, and wildlife spotting",
+    buttonText: "Explore Activities",
+  },
+  {
+    title: "Zero-Waste Dining",
+    subtitle: "Farm-to-table cuisine featuring local organic produce",
+    buttonText: "View Menu",
+  },
+];
+
+export const diningBanner = [
+  {
+    title: "Floating Restaurants on Dal Lake",
+    subtitle: "Dine on traditional houseboats while enjoying sunset views",
+    buttonText: "View Menu",
+  },
+  {
+    title: "Mountain Top Dining Experience",
+    subtitle: "Gourmet meals with panoramic Himalayan views",
+    buttonText: "Book Experience",
+  },
+  {
+    title: "Authentic Wazwan Feasts",
+    subtitle: "Traditional 36-course Kashmiri banquet served in heritage homes",
+    buttonText: "Learn More",
+  },
+];
+
+export const transitBanner = [
+  {
+    title: "Electric Vehicle Fleet",
+    subtitle: "Zero-emission travel through Kashmir's valleys",
+    buttonText: "View Routes",
+  },
+  {
+    title: "Carbon-Neutral Journeys",
+    subtitle: "Every ride supports reforestation projects in the Himalayas",
+    buttonText: "Learn More",
+  },
+  {
+    title: "Scenic Biofuel Shuttles",
+    subtitle: "Comfortable group travel powered by sustainable biofuels",
+    buttonText: "See Schedule",
+  },
+];
+
+export const plannerBanner = [
+  {
+    title: "Personalized Kashmir Itineraries",
+    subtitle: "Let us craft your perfect trip based on your interests and travel style",
+    buttonText: "Start Planning",
+  },
+  {
+    title: "Seasonal Travel Guides",
+    subtitle: "Best experiences for every season - from snowy winters to blooming springs",
+    buttonText: "View Seasonal Tips",
+  },
+  {
+    title: "Local Expert Access",
+    subtitle: "Connect directly with Kashmiri guides and experience curators",
+    buttonText: "Meet Our Guides",
+  },
+];
+
+export const languageBanner = [
+  {
+    title: "Professional Interpretation Services",
+    subtitle: "Accurate communication for tours, business, and medical needs",
+    buttonText: "Book Interpreter",
+  },
+  {
+    title: "Document Translation",
+    subtitle: "Certified translations for official documents and travel materials",
+    buttonText: "Get Quote",
+  },
+  {
+    title: "24/7 Emergency Support",
+    subtitle: "Immediate language assistance when you need it most",
+    buttonText: "See Languages",
+  },
+];

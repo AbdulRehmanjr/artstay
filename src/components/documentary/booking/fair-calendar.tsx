@@ -7,19 +7,19 @@ import isBetween from "dayjs/plugin/isBetween";
 import weekday from "dayjs/plugin/weekday";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-import { usePackage } from "~/hooks/use-artisan-package";
+import { useFairEvent } from "~/hooks/use-fair";
 
 dayjs.extend(isBetween);
 dayjs.extend(weekday);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-
 interface CalendarDay {
   date: Dayjs;
   isCurrentMonth: boolean;
   isDisabled: boolean;
 }
+
 const weekDays: readonly string[] = [
   "Su",
   "Mo",
@@ -30,9 +30,9 @@ const weekDays: readonly string[] = [
   "Sa",
 ] as const;
 
-export const ArtisanCalendar = () => {
+export const FairCalendar = () => {
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
-  const { artisanPackage, setPackage } = usePackage();
+  const { fairEvent, setDate } = useFairEvent();
 
   const generateCalendarDays = (date: Dayjs): CalendarDay[] => {
     const firstDayOfMonth = date.startOf("month");
@@ -56,10 +56,24 @@ export const ArtisanCalendar = () => {
     // Current month's days
     for (let i = 1; i <= daysInMonth; i++) {
       const currentDayDate = firstDayOfMonth.add(i - 1, "day");
+      
+      // For fair events, check if the date is within the event period
+      let isDisabled = currentDayDate.isBefore(currentDate, "day"); // Disable if date is before today
+      
+      if (fairEvent.event) {
+        const eventStart = dayjs(fairEvent.event.startDate);
+        const eventEnd = dayjs(fairEvent.event.endDate);
+        
+        // Only enable dates that fall within the event period
+        if (!isDisabled && !currentDayDate.isBetween(eventStart, eventEnd, 'day', '[]')) {
+          isDisabled = true;
+        }
+      }
+      
       days.push({
         date: currentDayDate,
         isCurrentMonth: true,
-        isDisabled: currentDayDate.isBefore(currentDate, "day"), // Disable if date is before today
+        isDisabled: isDisabled,
       });
     }
 
@@ -80,32 +94,16 @@ export const ArtisanCalendar = () => {
   const handleDateClick = (day: CalendarDay) => {
     if (day.isDisabled) return;
 
-    const startDate = day.date;
-    const endDate = startDate.add(artisanPackage.duration - 1, "day");
-
-    setPackage({
-      startDate: startDate.format("YYYY-MM-DD"),
-      endDate: endDate.format("YYYY-MM-DD"),
-    });
-  };
-
-  const isDateInRange = (date: Dayjs): boolean => {
-    if (!artisanPackage.startDate || !artisanPackage.endDate) return false;
-    const start = dayjs(artisanPackage.startDate);
-    const end = dayjs(artisanPackage.endDate);
-    return date.isBetween(start, end, "day", "[]");
+    // Set selected date
+    setDate(day.date.format("YYYY-MM-DD"));
   };
 
   const isDateSelected = (date: Dayjs): boolean => {
-    return (
-      date.format("YYYY-MM-DD") === artisanPackage.startDate ||
-      date.format("YYYY-MM-DD") === artisanPackage.endDate
-    );
+    return date.format("YYYY-MM-DD") === fairEvent.date;
   };
 
   const nextMonth = (): void => setCurrentDate(currentDate.add(1, "month"));
-  const prevMonth = (): void =>
-    setCurrentDate(currentDate.subtract(1, "month"));
+  const prevMonth = (): void => setCurrentDate(currentDate.subtract(1, "month"));
 
   const renderCalendarMonth = (date: Dayjs) => (
     <div className="w-full">
@@ -123,7 +121,6 @@ export const ArtisanCalendar = () => {
         ))}
 
         {generateCalendarDays(date).map((day, index) => {
-          const isInRange = isDateInRange(day.date);
           const isSelected = isDateSelected(day.date);
 
           return (
@@ -132,8 +129,16 @@ export const ArtisanCalendar = () => {
               key={index}
               onClick={() => handleDateClick(day)}
               disabled={day.isDisabled}
-              variant={isSelected || isInRange ? "default" : "outline"}
-              className="h-[5rem] w-[5rem]"
+              variant={isSelected ? "default" : "outline"}
+              className={`h-12 w-full ${
+                day.isCurrentMonth 
+                  ? "" 
+                  : "opacity-40"
+              } ${
+                isSelected
+                  ? "bg-primary text-white hover:bg-primary/90"
+                  : ""
+              }`}
             >
               {day.date.date()}
             </Button>
@@ -145,50 +150,69 @@ export const ArtisanCalendar = () => {
 
   return (
     <>
-      {artisanPackage.startDate && (
-        <div className="mt-4 space-y-2 rounded-lg border bg-secondary/5 p-4">
+      {fairEvent.date && fairEvent.event && (
+        <div className="mb-8 space-y-4 rounded-lg border bg-secondary/5 p-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-secondary">Selected Fair Event</h3>
+          </div>
+          
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Selected Period:</span>
+            <span className="text-muted-foreground">Event:</span>
             <span className="font-medium text-secondary">
-              {artisanPackage.duration} Days
+              {fairEvent.event.title}
             </span>
           </div>
+          
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Start Date:</span>
+            <span className="text-muted-foreground">Location:</span>
             <span className="font-medium">
-              {dayjs(artisanPackage.startDate).format("MMM D, YYYY")}
+              {fairEvent.event.vanue}, {fairEvent.event.location}
             </span>
           </div>
+          
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">End Date:</span>
+            <span className="text-muted-foreground">Selected Date:</span>
             <span className="font-medium">
-              {dayjs(artisanPackage.endDate).format("MMM D, YYYY")}
+              {dayjs(fairEvent.date).format("MMM D, YYYY")}
             </span>
           </div>
         </div>
       )}
-      <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={prevMonth}
-          className="h-8 w-8"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={nextMonth}
-          className="h-8 w-8"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
-      <div className="grid grid-cols-2 gap-8">
-        {renderCalendarMonth(currentDate)}
-        {renderCalendarMonth(currentDate.add(1, "month"))}
-      </div>
+      
+      {!fairEvent.event && (
+        <div className="mb-8 rounded-lg border bg-amber-50 p-4 text-amber-800">
+          <p className="text-center">Please select a fair event first to continue with registration.</p>
+        </div>
+      )}
+      
+      {fairEvent.event && (
+        <>
+          <div className="flex items-center justify-between">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={prevMonth}
+              className="h-8 w-8"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <h3 className="text-lg font-medium">Select Date</h3>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={nextMonth}
+              className="h-8 w-8"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <div className="mt-4 grid grid-cols-1 gap-8 md:grid-cols-2">
+            {renderCalendarMonth(currentDate)}
+            {renderCalendarMonth(currentDate.add(1, "month"))}
+          </div>
+        </>
+      )}
     </>
   );
 };
