@@ -505,13 +505,13 @@ type CraftDocumentorProps = {
   updatedAt: Date;
 };
 
-type DocumentorFilterOptions =  {
+type DocumentorFilterOptions = {
   specializations: string[];
   craftFocusAreas: string[];
   languages: string[];
   packageTypes: string[];
   priceRanges: string[];
-}
+};
 
 type DocumentorDetailProps = {
   documentorId: string;
@@ -553,26 +553,26 @@ type DocumentorPortfolioProps = {
   updatedAt: Date;
 };
 
-type HotelProps  = {
- hotelId: string;
- code: string;
- name: string;
- address: string;
- longitude: number;
- latitude: number;
- description: string;
- firstName: string;
- lastName: string;
- email: string;
- phone: string;
- checkIn: string;
- checkOut: string;
- isActive: boolean;
- images: string[];
- createdAt: Date;
- updatedAt: Date;
- accountId: string;
-}
+type HotelProps = {
+  hotelId: string;
+  code: string;
+  name: string;
+  address: string;
+  longitude: number;
+  latitude: number;
+  description: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  checkIn: string;
+  checkOut: string;
+  isActive: boolean;
+  images: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  accountId: string;
+};
 
 type RoomProps = {
   roomId: string;
@@ -590,4 +590,37 @@ type RoomProps = {
   minimumstay: number;
   images: string[];
   hotelId: string;
+};
+
+type BlockDateProps = {
+  startDate: string;
+  endDate: string;
+};
+
+type FilteredPricesProps = {
+  rrpId: string;
+  rateId: string;
+  roomId: string;
+  occupancy: number;
+  roomprices: {
+    startDate: string;
+    endDate: string;
+    price: number;
+    planCode: string;
+  }[];
+};
+
+type RatePlanDetailProps = {
+  code: string;
+  description: string;
+  hotelId: string;
+  name: string;
+  isActive: boolean;
+  ratePlanId: string;
+  mealId: number;
+  roomrateplans: {
+    room: { capacity: number };
+    occupancy: number;
+    rrpId: string;
+  }[];
 };

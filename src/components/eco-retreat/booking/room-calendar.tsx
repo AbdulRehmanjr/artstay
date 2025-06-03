@@ -1,318 +1,485 @@
-// "use client";
+"use client";
 
-// import { useState, useEffect } from "react";
-// import { ChevronLeft, ChevronRight } from "lucide-react";
-// import dayjs from "dayjs";
-// import { Button } from "~/components/ui/button";
-// import { cn } from "~/lib/utils";
-// import { api } from "~/trpc/react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
+import { Button } from "~/components/ui/button";
+import { cn } from "~/lib/utils";
+import { api } from "~/trpc/react";
+import { useRoom } from "~/hooks/use-room";
+import { useState, useCallback, useMemo } from "react";
+import React, { memo } from 'react';
 
+dayjs.extend(isBetween);
 
-// export const RoomCalendar = () => {
-//   const [currentMonth, setCurrentMonth] = useState<dayjs.Dayjs>(
-//     dayjs().startOf("month")
-//   );
-//   const [nextMonth, setNextMonth] = useState<dayjs.Dayjs>(
-//     dayjs().add(1, "month").startOf("month")
-//   );
-//   const [hoverDate, setHoverDate] = useState<dayjs.Dayjs | null>(null);
-//   const [selectingStart, setSelectingStart] = useState<boolean>(true);
-//   const [isMobile, setIsMobile] = useState<boolean>(false);
+type BlockDateProps = {
+  startDate: string;
+  endDate: string;
+};
 
-//   // Check if mobile on mount and when window resizes
-//   useEffect(() => {
-//     const checkIfMobile = () => {
-//       setIsMobile(window.innerWidth < 768);
-//     };
+type ComponentProps = {
+  room: RoomProps;
+};
+
+interface DateRange {
+  startDate: dayjs.Dayjs | null;
+  endDate: dayjs.Dayjs | null;
+}
+
+interface DateTemplateProps {
+  date: dayjs.Dayjs | null;
+  dateRange: DateRange;
+  isDateBlocked: (date: dayjs.Dayjs) => boolean | undefined;
+  getPrice: (date: dayjs.Dayjs) => number;
+  handleDateClick: (date: dayjs.Dayjs) => void;
+}
+
+// Skeleton component for loading state
+const DateSkeleton = memo(() => (
+  <div className="aspect-square min-h-16 p-2 border border-gray-200 bg-gray-50 animate-pulse">
+    <div className="h-4 bg-gray-300 rounded mb-2"></div>
+    <div className="h-3 bg-gray-300 rounded w-2/3"></div>
+  </div>
+));
+
+DateSkeleton.displayName = 'DateSkeleton';
+
+const DateTemplate: React.FC<DateTemplateProps> = memo(({
+  date,
+  dateRange,
+  isDateBlocked,
+  getPrice,
+  handleDateClick,
+}) => {
+  if (!date) {
+    return (
+      <div className="aspect-square min-h-16 border border-gray-200 bg-gray-50" />
+    );
+  }
+
+  const isPast = date.isBefore(dayjs(), "day");
+  const price = getPrice(date);
+  const isBlocked = isDateBlocked(date);
+  const hasNoPrice = price === 0;
+  const isDisabled = isPast || (isBlocked ?? false) || hasNoPrice;
+  
+  const isSelected =
+    ((dateRange.startDate && date.isSame(dateRange.startDate, "day")) ?? false) ||
+    (dateRange.endDate && date.isSame(dateRange.endDate, "day"));
+  const isInSelectedRange =
+    dateRange.startDate && dateRange.endDate
+      ? date.isBetween(dateRange.startDate, dateRange.endDate, "day", "()")
+      : false;
+  const isCurrentMonth = date.month() === dayjs().month() && date.year() === dayjs().year();
+
+  return (
+    <button
+      type="button"
+      className={cn(
+        "aspect-square min-h-16 p-2 border transition-all duration-200 relative",
+        "flex flex-col items-center justify-center text-sm",
+        
+        // Base styles
+        "border-gray-200 bg-white",
+        
+        // Text colors based on state
+        isCurrentMonth ? "text-gray-900" : "text-gray-400",
+        
+        // Disabled states
+        isDisabled && "cursor-not-allowed opacity-50",
+        isPast && "bg-gray-100",
+        ((isBlocked ??false) || hasNoPrice) && "bg-red-100 border-red-200 text-red-600",
+        
+        // Selected states
+        isSelected && "bg-primary border-primary text-white font-semibold",
+        isInSelectedRange && "bg-primary/20 border-primary/30 text-primary",
+        
+        // Interactive states - avoid hover effects on selected dates
+        !isDisabled && !isSelected && "cursor-pointer hover:bg-gray-50 hover:border-primary hover:shadow-sm",
+        !isDisabled && isSelected && "cursor-pointer",
+        
+        // Focus styles
+        "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
+      )}
+      disabled={isDisabled}
+      onClick={() => !isDisabled && handleDateClick(date)}
+    >
+      <span className={cn(
+        "text-base font-medium mb-1",
+        isSelected && "text-white"
+      )}>
+        {date.date()}
+      </span>
+      
+      {/* Show price only if available and not disabled */}
+      {!isDisabled && price > 0 && (
+        <span className={cn(
+          "text-xs font-medium",
+          isSelected ? "text-white" : "text-gray-600",
+          isInSelectedRange ? "text-primary" : ""
+        )}>
+          ${price}
+        </span>
+      )}
+      
+      {/* Show blocking reason */}
+      {isBlocked && !isPast && (
+        <span className="text-xs text-red-500 font-medium">
+          Blocked
+        </span>
+      )}
+      
+      {/* Show no rate for dates with zero price */}
+      {hasNoPrice && !isPast && !isBlocked && (
+        <span className="text-xs text-red-500 font-medium">
+          No Rate
+        </span>
+      )}
+    </button>
+  );
+});
+
+DateTemplate.displayName = 'DateTemplate';
+
+// Calendar skeleton component
+const CalendarSkeleton = memo(() => (
+  <div className="w-full space-y-4">
+    <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6 lg:p-8">
+      <div className="mb-4 sm:mb-6">
+        <div className="h-4 bg-gray-300 rounded w-24 mb-2 animate-pulse"></div>
+        <div className="h-3 bg-gray-300 rounded w-48 animate-pulse"></div>
+      </div>
+
+      <div className="space-y-4 rounded-lg bg-gray-50 p-3 sm:p-4">
+        {/* Header skeleton */}
+        <div className="mb-6 flex items-center justify-between">
+          <div className="h-10 w-24 bg-gray-300 rounded animate-pulse"></div>
+          <div className="h-8 w-32 bg-gray-300 rounded animate-pulse"></div>
+          <div className="h-10 w-24 bg-gray-300 rounded animate-pulse"></div>
+        </div>
+
+        {/* Calendar grid skeleton */}
+        <div className="space-y-2">
+          {/* Weekday headers */}
+          <div className="grid grid-cols-7 gap-2">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div key={i} className="h-8 bg-gray-300 rounded animate-pulse" />
+            ))}
+          </div>
+
+          {/* Calendar days */}
+          {Array.from({ length: 6 }).map((_, weekIndex) => (
+            <div key={weekIndex} className="grid grid-cols-7 gap-2">
+              {Array.from({ length: 7 }).map((_, dayIndex) => (
+                <DateSkeleton key={dayIndex} />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+));
+
+CalendarSkeleton.displayName = 'CalendarSkeleton';
+
+export const RoomCalendar = ({ room }: ComponentProps) => {
+  const { roomData, setDateRange, clearDates } = useRoom();
+  const [currentMonth, setCurrentMonth] = useState<dayjs.Dayjs>(
+    dayjs().startOf("month"),
+  );
+
+  const [blockDates] =
+    api.ecoretreact.getBlockDateByRoomIdAndQuantity.useSuspenseQuery({
+      roomId: room.roomId,
+      quantity: roomData.quantity,
+    });
+
+  const pricesData = api.ecoretreact.getPricesWithRoomRateId.useQuery(
+    { roomRateId: roomData.rrpId ?? '' },
+    { enabled: !!roomData.rrpId },
+  );
+
+  // Get selected dates from store
+  const selectedStartDate = roomData.startDate
+    ? dayjs(roomData.startDate)
+    : null;
+  const selectedEndDate = roomData.endDate ? dayjs(roomData.endDate) : null;
+
+  // Navigate months
+  const goToPreviousMonth = () => {
+    setCurrentMonth(currentMonth.subtract(1, "month"));
+  };
+
+  const goToNextMonth = () => {
+    setCurrentMonth(currentMonth.add(1, "month"));
+  };
+
+  // Generate calendar days for the current month - optimized with useMemo
+  const currentMonthDays: (dayjs.Dayjs | null)[][] = useMemo(() => {
+    const firstDay = currentMonth.clone().startOf("month").day();
+    const daysInMonth = currentMonth.daysInMonth();
+    const emptyDaysBefore: (dayjs.Dayjs | null)[] = Array(firstDay).fill(null) as (dayjs.Dayjs | null)[];
+    const currentMonthDays: dayjs.Dayjs[] = Array.from(
+      { length: daysInMonth },
+      (_, i) => currentMonth.clone().date(i + 1),
+    );
+    const calendarGrid: (dayjs.Dayjs | null)[] = [...emptyDaysBefore, ...currentMonthDays];
+    const weekGrid: (dayjs.Dayjs | null)[][] = [];
+    const chunkSize = 7;
+    for (let i = 0; i < calendarGrid.length; i += chunkSize) {
+      weekGrid.push(calendarGrid.slice(i, i + chunkSize));
+    }
+    return weekGrid;
+  }, [currentMonth]);
+
+  const isDateBlocked = useCallback((date: dayjs.Dayjs): boolean => {
+    if (!blockDates || blockDates.length === 0) return false;
+
+    return blockDates.some((blockDate: BlockDateProps) => {
+      const blockStart = dayjs(blockDate.startDate);
+      const blockEnd = dayjs(blockDate.endDate);
+
+      // Check if date falls within blocked range (inclusive)
+      return date.isBetween(blockStart, blockEnd, "day", "[]");
+    });
+  }, [blockDates]);
+
+  const isRangeValid = useCallback(
+    (start: dayjs.Dayjs, end: dayjs.Dayjs) => {
+      let currentDate = start.clone();
+      while (currentDate.isBefore(end) || currentDate.isSame(end, "day")) {
+        if (isDateBlocked(currentDate) || getPrice(currentDate) === 0) {
+          return false;
+        }
+        currentDate = currentDate.add(1, "day");
+      }
+      return true;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isDateBlocked],
+  );
+
+  const getPrice = useCallback(
+    (date: dayjs.Dayjs): number => {
+      if (pricesData.data?.roomprices) {
+        const priceEntry = pricesData.data.roomprices.find((data) =>
+          date.isBetween(
+            dayjs(data.startDate),
+            dayjs(data.endDate),
+            "day",
+            "[]",
+          ),
+        );
+        return priceEntry?.price ?? 0;
+      }
+      return 0;
+    },
+    [pricesData.data],
+  );
+
+  const isDateDisabled = useCallback((date: dayjs.Dayjs) => {
+    // Disable past dates, blocked dates, and dates with no price
+    return date.isBefore(dayjs(), "day") || isDateBlocked(date) || getPrice(date) === 0;
+  }, [isDateBlocked, getPrice]);
+
+  const handleDateClick = useCallback((date: dayjs.Dayjs) => {
+    if (isDateDisabled(date)) {
+      return;
+    }
+
+    const clickedDate = date.format("YYYY-MM-DD");
+
+    // If no start date selected, or if we're selecting a new range
+    if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
+      setDateRange(clickedDate, null);
+    }
+    // If start date exists but no end date
+    else if (selectedStartDate && !selectedEndDate) {
+      const startDateObj = dayjs(roomData.startDate);
+
+      if (date.isBefore(startDateObj)) {
+        // If clicked date is before start date, make it the new start date
+        setDateRange(clickedDate, null);
+      } else {
+        // Check if range is valid before setting end date
+        if (isRangeValid(startDateObj, date)) {
+          setDateRange(roomData.startDate, clickedDate);
+        } else {
+          // Reset if range contains blocked dates
+          setDateRange(clickedDate, null);
+        }
+      }
+    }
+  }, [selectedStartDate, selectedEndDate, roomData.startDate, setDateRange, isDateDisabled, isRangeValid]);
+
+  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const dateRange: DateRange = {
+    startDate: selectedStartDate,
+    endDate: selectedEndDate,
+  };
+
+  // Calculate total nights and price
+  const totalNights = useMemo(() => {
+    if (!selectedStartDate || !selectedEndDate) return 0;
+    return selectedEndDate.diff(selectedStartDate, "day");
+  }, [selectedStartDate, selectedEndDate]);
+
+  const totalPrice = useMemo(() => {
+    if (!selectedStartDate || !selectedEndDate) return 0;
+    let total = 0;
+    let currentDate = selectedStartDate.clone();
     
-//     // Initial check
-//     checkIfMobile();
+    while (currentDate.isBefore(selectedEndDate, "day")) {
+      total += getPrice(currentDate);
+      currentDate = currentDate.add(1, "day");
+    }
     
-//     // Add listener for resize
-//     window.addEventListener('resize', checkIfMobile);
-    
-//     // Cleanup
-//     return () => window.removeEventListener('resize', checkIfMobile);
-//   }, []);
+    return total * roomData.quantity;
+  }, [selectedStartDate, selectedEndDate, getPrice, roomData.quantity]);
 
-//   // Navigate both months together
-//   const goToPreviousMonth = () => {
-//     setCurrentMonth(currentMonth.subtract(1, "month"));
-//     setNextMonth(nextMonth.subtract(1, "month"));
-//   };
+  // Show skeleton while loading
+  if (pricesData.isLoading || !roomData.rrpId) {
+    return <CalendarSkeleton />;
+  }
 
-//   const goToNextMonth = () => {
-//     setCurrentMonth(currentMonth.add(1, "month"));
-//     setNextMonth(nextMonth.add(1, "month"));
-//   };
+  return (
+    <div className="w-full space-y-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6 lg:p-8">
+        <div className="mb-4 sm:mb-6">
+          <h2 className="mb-1 text-xs font-medium uppercase tracking-[0.2em] text-primary/70">
+            Select Dates
+          </h2>
+          <p className="text-sm text-gray-500">
+            Choose your check-in and check-out dates
+          </p>
+        </div>
 
-//   // Generate calendar days for a specific month
-//   const generateMonthDays = (month: dayjs.Dayjs) => {
-//     const firstDayOfMonth = month.startOf("month");
-//     const lastDayOfMonth = month.endOf("month");
-//     const startOfCalendar = firstDayOfMonth.startOf("week");
-//     const endOfCalendar = lastDayOfMonth.endOf("week");
+        <div className="space-y-4 rounded-lg bg-gray-50 p-3 sm:p-4">
+          {/* Header with navigation */}
+          <div className="mb-6 flex items-center justify-between">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={goToPreviousMonth}
+              aria-label="Previous month"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </Button>
 
-//     const calendarDays: dayjs.Dayjs[] = [];
-//     let day = startOfCalendar;
+            <h3 className="text-xl font-bold text-gray-700">
+              {currentMonth.format("MMMM YYYY")}
+            </h3>
 
-//     while (day.isBefore(endOfCalendar) || day.isSame(endOfCalendar, "day")) {
-//       calendarDays.push(day);
-//       day = day.add(1, "day");
-//     }
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={goToNextMonth}
+              aria-label="Next month"
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
 
-//     return calendarDays;
-//   };
+          {/* Calendar Grid */}
+          <div className="space-y-2">
+            {/* Weekday headers */}
+            <div className="grid grid-cols-7 gap-2">
+              {weekdays.map((day) => (
+                <div
+                  key={day}
+                  className="text-center text-sm font-semibold text-gray-700 py-2"
+                >
+                  <span className="hidden sm:inline">{day}</span>
+                  <span className="sm:hidden">{day.charAt(0)}</span>
+                </div>
+              ))}
+            </div>
 
-//   const handleDateClick = (date: dayjs.Dayjs) => {
-//     // Prevent selecting dates in the past
-//     if (date.isBefore(dayjs(), "day")) {
-//       return;
-//     }
+            {/* Calendar days */}
+            {currentMonthDays.map((week, index) => (
+              <div key={index} className="grid grid-cols-7 gap-2">
+                {week.map((date, dateIndex) => (
+                  <DateTemplate
+                    key={dateIndex}
+                    date={date}
+                    dateRange={dateRange}
+                    isDateBlocked={isDateBlocked}
+                    getPrice={getPrice}
+                    handleDateClick={handleDateClick}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
 
-//     if (selectingStart) {
-//       onStartDateChange(date.toDate());
-//       if (endDate && date.isAfter(dayjs(endDate))) {
-//         onEndDateChange(date.add(1, "day").toDate());
-//       }
-//       setSelectingStart(false);
-//     } else {
-//       // Make sure end date is not before start date
-//       if (startDate && date.isBefore(dayjs(startDate))) {
-//         onStartDateChange(date.toDate());
-//         onEndDateChange(dayjs(startDate).toDate());
-//       } else {
-//         onEndDateChange(date.toDate());
-//       }
-//       setSelectingStart(true);
-//     }
-//   };
+          {/* Selected date range display */}
+          {selectedStartDate && (
+            <div className="mt-6 rounded-lg bg-blue-50 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-2 text-sm">
+                  <span className="font-medium text-gray-700">
+                    {selectedEndDate ? "Selected Dates:" : "Check-in Date:"}
+                  </span>
+                  <span className="rounded-full bg-primary/10 px-3 py-1 font-medium text-primary">
+                    {selectedStartDate.format("MMM D, YYYY")}
+                  </span>
+                  {selectedEndDate && (
+                    <>
+                      <span className="text-gray-500">to</span>
+                      <span className="rounded-full bg-primary/10 px-3 py-1 font-medium text-primary">
+                        {selectedEndDate.format("MMM D, YYYY")}
+                      </span>
+                    </>
+                  )}
+                  {selectedEndDate && totalNights > 0 && (
+                    <>
+                      <span className="rounded-full bg-green-100 px-3 py-1 font-medium text-green-700">
+                        {totalNights} nights
+                      </span>
+                      <span className="rounded-full bg-blue-100 px-3 py-1 font-medium text-blue-700">
+                        Total: ${totalPrice}
+                      </span>
+                    </>
+                  )}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  type="button"
+                  onClick={clearDates}
+                  className="text-sm"
+                >
+                  Clear
+                </Button>
+              </div>
+            </div>
+          )}
 
-//   const isInRange = (date: dayjs.Dayjs) => {
-//     if (!startDate || !endDate) return false;
-
-//     const start = dayjs(startDate);
-//     const end = dayjs(endDate);
-
-//     if (!selectingStart && hoverDate) {
-//       return (
-//         (date.isAfter(start, "day") || date.isSame(start, "day")) &&
-//         (date.isBefore(hoverDate, "day") || date.isSame(hoverDate, "day"))
-//       );
-//     }
-
-//     return (
-//       (date.isAfter(start, "day") || date.isSame(start, "day")) &&
-//       (date.isBefore(end, "day") || date.isSame(end, "day"))
-//     );
-//   };
-
-//   const isStartDate = (date: dayjs.Dayjs) => {
-//     return startDate ? date.isSame(dayjs(startDate), "day") : false;
-//   };
-
-//   const isEndDate = (date: dayjs.Dayjs) => {
-//     return endDate ? date.isSame(dayjs(endDate), "day") : false;
-//   };
-
-//   const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-//   const shortWeekdays = ["S", "M", "T", "W", "T", "F", "S"];
-
-//   return (
-//     <div className="p-2 sm:p-4">
-//       <div className="flex flex-col md:grid md:grid-cols-2 md:gap-10 lg:gap-40">
-//         {/* First Month */}
-//         <div className="mb-6 md:mb-0">
-//           <div className="flex items-center justify-between mb-4">
-//             <Button
-//               type="button"
-//               size="icon"
-//               onClick={goToPreviousMonth}
-//               className="h-7 w-7 sm:h-8 sm:w-8 p-0"
-//               aria-label="Previous month"
-//             >
-//               <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-//             </Button>
-//             <h2 className="text-base sm:text-lg font-semibold text-center">
-//               {currentMonth.format("MMMM YYYY")}
-//             </h2>
-//             {/* On mobile, we need next button for first month too */}
-//             {isMobile && (
-//               <Button
-//                 type="button"
-//                 size="icon"
-//                 onClick={goToNextMonth}
-//                 className="h-7 w-7 sm:h-8 sm:w-8 p-0 md:hidden"
-//                 aria-label="Next month"
-//               >
-//                 <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
-//               </Button>
-//             )}
-//             {/* Empty div to maintain flex layout on desktop */}
-//             {!isMobile && <div className="w-7 sm:w-8"></div>}
-//           </div>
-
-//           <div className="grid grid-cols-7 gap-1 sm:gap-2">
-//             {/* Weekday headers */}
-//             {(isMobile ? shortWeekdays : weekdays).map((day, index) => (
-//               <div
-//                 key={`first-${index}`}
-//                 className="text-center text-xs sm:text-sm font-medium text-gray-500 p-1 sm:p-2"
-//               >
-//                 {day}
-//               </div>
-//             ))}
-
-//             {/* Calendar days */}
-//             {generateMonthDays(currentMonth).map((day) => {
-//               const isCurrentMonth = day.month() === currentMonth.month();
-//               const isToday = day.isSame(dayjs(), "day");
-//               const isPast = day.isBefore(dayjs(), "day");
-//               const isStart = isStartDate(day);
-//               const isEnd = isEndDate(day);
-//               const inRange = isInRange(day);
-
-//               return (
-//                 <button
-//                   type="button"
-//                   key={`first-${day.format("YYYY-MM-DD")}`}
-//                   onClick={() => !isPast && handleDateClick(day)}
-//                   onMouseEnter={() => !selectingStart && setHoverDate(day)}
-//                   onMouseLeave={() => setHoverDate(null)}
-//                   disabled={isPast}
-//                   className={cn(
-//                     "relative p-1 sm:p-2 text-center rounded-md transition-colors text-sm sm:text-base md:text-lg",
-//                     isCurrentMonth ? "text-gray-900" : "text-gray-400",
-//                     isPast ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-gray-100",
-//                     isToday && "border border-primary",
-//                     isStart && "bg-primary text-white hover:bg-primary",
-//                     isEnd && "bg-primary text-white hover:bg-primary",
-//                     inRange && !isStart && !isEnd && "bg-primary/10"
-//                   )}
-//                 >
-//                   {day.date()}
-
-//                   {/* Start/End indicators */}
-//                   {(isStart || isEnd) && (
-//                     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-xs">
-//                       •
-//                     </div>
-//                   )}
-//                 </button>
-//               );
-//             })}
-//           </div>
-//         </div>
-
-//         {/* Second Month - Only show on larger screens or as needed */}
-//         {(!isMobile || currentMonth.month() !== nextMonth.month()) && (
-//           <div>
-//             <div className="flex items-center justify-between mb-4">
-//               {/* On mobile, this is an empty div to maintain layout */}
-//               {isMobile ? <div className="w-7 sm:w-8"></div> : null}
-//               <h2 className="text-base sm:text-lg font-semibold text-center">
-//                 {nextMonth.format("MMMM YYYY")}
-//               </h2>
-//               <Button
-//                 type="button"
-//                 size="icon"
-//                 onClick={goToNextMonth}
-//                 className="h-7 w-7 sm:h-8 sm:w-8 p-0"
-//                 aria-label="Next month"
-//               >
-//                 <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
-//               </Button>
-//             </div>
-
-//             <div className="grid grid-cols-7 gap-1 sm:gap-2">
-//               {/* Weekday headers */}
-//               {(isMobile ? shortWeekdays : weekdays).map((day, index) => (
-//                 <div
-//                   key={`second-${index}`}
-//                   className="text-center text-xs sm:text-sm font-medium text-gray-500 p-1 sm:p-2"
-//                 >
-//                   {day}
-//                 </div>
-//               ))}
-
-//               {/* Calendar days */}
-//               {generateMonthDays(nextMonth).map((day) => {
-//                 const isCurrentMonth = day.month() === nextMonth.month();
-//                 const isToday = day.isSame(dayjs(), "day");
-//                 const isPast = day.isBefore(dayjs(), "day");
-//                 const isStart = isStartDate(day);
-//                 const isEnd = isEndDate(day);
-//                 const inRange = isInRange(day);
-
-//                 return (
-//                   <button
-//                     type="button"
-//                     key={`second-${day.format("YYYY-MM-DD")}`}
-//                     onClick={() => !isPast && handleDateClick(day)}
-//                     onMouseEnter={() => !selectingStart && setHoverDate(day)}
-//                     onMouseLeave={() => setHoverDate(null)}
-//                     disabled={isPast}
-//                     className={cn(
-//                       "relative p-1 sm:p-2 text-center rounded-md transition-colors text-sm sm:text-base md:text-lg",
-//                       isCurrentMonth ? "text-gray-900" : "text-gray-400",
-//                       isPast ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-gray-100",
-//                       isToday && "border border-primary",
-//                       isStart && "bg-primary text-white hover:bg-primary",
-//                       isEnd && "bg-primary text-white hover:bg-primary",
-//                       inRange && !isStart && !isEnd && "bg-primary/10"
-//                     )}
-//                   >
-//                     {day.date()}
-
-//                     {/* Start/End indicators */}
-//                     {(isStart || isEnd) && (
-//                       <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-xs">
-//                         •
-//                       </div>
-//                     )}
-//                   </button>
-//                 );
-//               })}
-//             </div>
-//           </div>
-//         )}
-//       </div>
-
-//       <div className="mt-4 p-2 sm:p-3 bg-gray-50 rounded-md">
-//         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
-//           <div>
-//             <span className="text-xs sm:text-sm font-medium">Selected:</span>
-//             <div className="text-xs sm:text-sm">
-//               {startDate
-//                 ? dayjs(startDate).format("MMM D, YYYY")
-//                 : "Select check-in"}{" "}
-//               -{" "}
-//               {endDate
-//                 ? dayjs(endDate).format("MMM D, YYYY")
-//                 : "Select check-out"}
-//             </div>
-//             {startDate && endDate && (
-//               <div className="text-xs text-gray-500">
-//                 {dayjs(endDate).diff(dayjs(startDate), "day")} nights
-//               </div>
-//             )}
-//           </div>
-//           <div>
-//             <Button
-//               variant="outline"
-//               size="sm"
-//               type="button"
-//               onClick={() => {
-//                 onStartDateChange(null);
-//                 onEndDateChange(null);
-//               }}
-//               className="text-xs sm:text-sm text-primary hover:underline px-2 py-1 h-auto sm:h-8"
-//             >
-//               Reset
-//             </Button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
+          {/* Action Buttons */}
+          <div className="flex gap-2 pt-4">
+            <Button
+              variant="outline"
+              onClick={clearDates}
+              className="flex-1"
+              disabled={!selectedStartDate}
+            >
+              Reset
+            </Button>
+            <Button
+              className="flex-1"
+              disabled={!selectedStartDate || !selectedEndDate}
+            >
+              Continue
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
