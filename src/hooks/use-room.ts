@@ -8,6 +8,9 @@ type RoomDataProps = {
   startDate: string | null;
   endDate: string | null;
   rrpId: string | null;
+  totalPrice: number;
+  duration: number;
+  roomId: string | null;
 };
 
 type PackageStoreProps = {
@@ -22,6 +25,9 @@ type HotelPackageProps = {
   setOpenBooking: (openBooking: boolean) => void;
   setDateRange: (startDate: string | null, endDate?: string | null) => void;
   setRrpId: (rrpId: string | null) => void;
+  setTotalPrice: (totalPrice: number) => void;
+  setDuration: (duration: number) => void;
+  setRoomId: (roomId: string | null) => void;
   clearDates: () => void;
   clearPackage: () => void;
 };
@@ -35,6 +41,9 @@ const initialValues: PackageStoreProps = {
     startDate: null,
     endDate: null,
     rrpId: null,
+    totalPrice: 0,
+    duration: 0,
+    roomId: null,
   },
 };
 
@@ -47,12 +56,14 @@ export const useRoom = create<HotelPackageProps>()(
           roomData: { ...state.roomData, ...roomData }
         })),
       setOpenBooking: (openBooking) => set({ openBooking }),
-      setDateRange: (startDate, endDate = null) => 
+      setDateRange: (startDate, endDate) => 
         set((state) => ({
           roomData: { 
             ...state.roomData, 
             startDate, 
-            endDate 
+            endDate: endDate ?? null,
+            totalPrice: 0,
+            duration: 0
           }
         })),
       setRrpId: (rrpId) => 
@@ -62,12 +73,36 @@ export const useRoom = create<HotelPackageProps>()(
             rrpId 
           }
         })),
+      setTotalPrice: (totalPrice) => 
+        set((state) => ({
+          roomData: { 
+            ...state.roomData, 
+            totalPrice 
+          }
+        })),
+      setDuration: (duration) => 
+        set((state) => ({
+          roomData: { 
+            ...state.roomData, 
+            duration 
+          }
+        })),
+      setRoomId: (roomId) => 
+        set((state) => ({
+          roomData: { 
+            ...state.roomData, 
+            roomId 
+          }
+        })),
       clearDates: () => 
         set((state) => ({
           roomData: { 
             ...state.roomData, 
             startDate: null, 
-            endDate: null 
+            endDate: null,
+            totalPrice: 0,
+            duration: 0,
+            roomId: null
           }
         })),
       clearPackage: () => set({ ...initialValues }),

@@ -1,19 +1,19 @@
 import { type Metadata } from "next";
 import { HeadlingUnderline } from "~/components/common/heading-underline";
-import { FairBookingForm } from "~/components/fair/booking/fari-form";
-
+import { RoomBookingForm } from "~/components/eco-retreat/booking/booking-form";
 
 export const metadata: Metadata = {
-  title: "Artstay | Fair Booking",
+  title: "Artstay | Room Booking",
   description:
-    "Discover authentic Kashmir experiences with local guides. Book cultural tours, wildlife safaris, and immersive travel packages in the heart of Kashmir valley.",
+    "Complete your room reservation with Artstay. Book authentic Kashmir accommodations with local hospitality. Secure booking process for hotels, guesthouses, and traditional stays in Kashmir valley.",
 };
 
 export default function BookingPage() {
+
   return (
     <div className="container py-10">
       <HeadlingUnderline title="Booking" />
-      <FairBookingForm />
+      <RoomBookingForm />
     </div>
   );
 }

@@ -7,8 +7,9 @@ import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { useRoom } from "~/hooks/use-room";
-import { useState, useCallback, useMemo } from "react";
-import React, { memo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from "react";
+import React, { memo } from "react";
+import { useRouter } from "next/navigation";
 
 dayjs.extend(isBetween);
 
@@ -36,126 +37,127 @@ interface DateTemplateProps {
 
 // Skeleton component for loading state
 const DateSkeleton = memo(() => (
-  <div className="aspect-square min-h-16 p-2 border border-gray-200 bg-gray-50 animate-pulse">
-    <div className="h-4 bg-gray-300 rounded mb-2"></div>
-    <div className="h-3 bg-gray-300 rounded w-2/3"></div>
+  <div className="aspect-square min-h-16 animate-pulse border border-gray-200 bg-gray-50 p-2">
+    <div className="mb-2 h-4 rounded bg-gray-300"></div>
+    <div className="h-3 w-2/3 rounded bg-gray-300"></div>
   </div>
 ));
 
-DateSkeleton.displayName = 'DateSkeleton';
+DateSkeleton.displayName = "DateSkeleton";
 
-const DateTemplate: React.FC<DateTemplateProps> = memo(({
-  date,
-  dateRange,
-  isDateBlocked,
-  getPrice,
-  handleDateClick,
-}) => {
-  if (!date) {
+const DateTemplate: React.FC<DateTemplateProps> = memo(
+  ({ date, dateRange, isDateBlocked, getPrice, handleDateClick }) => {
+    if (!date) {
+      return (
+        <div className="aspect-square min-h-16 border border-gray-200 bg-gray-50" />
+      );
+    }
+
+    const isPast = date.isBefore(dayjs(), "day");
+    const price = getPrice(date);
+    const isBlocked = isDateBlocked(date);
+    const hasNoPrice = price === 0;
+    const isDisabled = isPast || (isBlocked ?? false) || hasNoPrice;
+
+    const isSelected =
+      ((dateRange.startDate && date.isSame(dateRange.startDate, "day")) ??
+        false) ||
+      (dateRange.endDate && date.isSame(dateRange.endDate, "day"));
+    const isInSelectedRange =
+      dateRange.startDate && dateRange.endDate
+        ? date.isBetween(dateRange.startDate, dateRange.endDate, "day", "()")
+        : false;
+    const isCurrentMonth =
+      date.month() === dayjs().month() && date.year() === dayjs().year();
+
     return (
-      <div className="aspect-square min-h-16 border border-gray-200 bg-gray-50" />
+      <button
+        type="button"
+        className={cn(
+          "relative aspect-square min-h-16 border p-2 transition-all duration-200",
+          "flex flex-col items-center justify-center text-sm",
+
+          // Base styles
+          "border-gray-200 bg-white",
+
+          // Text colors based on state
+          isCurrentMonth ? "text-gray-900" : "text-gray-400",
+
+          // Disabled states
+          isDisabled && "cursor-not-allowed opacity-50",
+          isPast && "bg-gray-100",
+          ((isBlocked ?? false) || hasNoPrice) &&
+            "border-red-200 bg-red-100 text-red-600",
+
+          // Selected states
+          isSelected && "border-primary bg-primary font-semibold text-white",
+          isInSelectedRange && "border-primary/30 bg-primary/20 text-primary",
+
+          // Interactive states - avoid hover effects on selected dates
+          !isDisabled &&
+            !isSelected &&
+            "cursor-pointer hover:border-primary hover:bg-gray-50 hover:shadow-sm",
+          !isDisabled && isSelected && "cursor-pointer",
+
+          // Focus styles
+          "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1",
+        )}
+        disabled={isDisabled}
+        onClick={() => !isDisabled && handleDateClick(date)}
+      >
+        <span
+          className={cn(
+            "mb-1 text-base font-medium",
+            isSelected && "text-white",
+          )}
+        >
+          {date.date()}
+        </span>
+
+        {/* Show price only if available and not disabled */}
+        {!isDisabled && price > 0 && (
+          <span
+            className={cn(
+              "text-xs font-medium",
+              isSelected ? "text-white" : "text-gray-600",
+              isInSelectedRange ? "text-primary" : "",
+            )}
+          >
+            ${price}
+          </span>
+        )}
+
+        {/* Show blocking reason */}
+        {isBlocked && !isPast && (
+          <span className="text-xs font-medium text-red-500">Blocked</span>
+        )}
+
+        {/* Show no rate for dates with zero price */}
+        {hasNoPrice && !isPast && !isBlocked && (
+          <span className="text-xs font-medium text-red-500">No Rate</span>
+        )}
+      </button>
     );
-  }
+  },
+);
 
-  const isPast = date.isBefore(dayjs(), "day");
-  const price = getPrice(date);
-  const isBlocked = isDateBlocked(date);
-  const hasNoPrice = price === 0;
-  const isDisabled = isPast || (isBlocked ?? false) || hasNoPrice;
-  
-  const isSelected =
-    ((dateRange.startDate && date.isSame(dateRange.startDate, "day")) ?? false) ||
-    (dateRange.endDate && date.isSame(dateRange.endDate, "day"));
-  const isInSelectedRange =
-    dateRange.startDate && dateRange.endDate
-      ? date.isBetween(dateRange.startDate, dateRange.endDate, "day", "()")
-      : false;
-  const isCurrentMonth = date.month() === dayjs().month() && date.year() === dayjs().year();
-
-  return (
-    <button
-      type="button"
-      className={cn(
-        "aspect-square min-h-16 p-2 border transition-all duration-200 relative",
-        "flex flex-col items-center justify-center text-sm",
-        
-        // Base styles
-        "border-gray-200 bg-white",
-        
-        // Text colors based on state
-        isCurrentMonth ? "text-gray-900" : "text-gray-400",
-        
-        // Disabled states
-        isDisabled && "cursor-not-allowed opacity-50",
-        isPast && "bg-gray-100",
-        ((isBlocked ??false) || hasNoPrice) && "bg-red-100 border-red-200 text-red-600",
-        
-        // Selected states
-        isSelected && "bg-primary border-primary text-white font-semibold",
-        isInSelectedRange && "bg-primary/20 border-primary/30 text-primary",
-        
-        // Interactive states - avoid hover effects on selected dates
-        !isDisabled && !isSelected && "cursor-pointer hover:bg-gray-50 hover:border-primary hover:shadow-sm",
-        !isDisabled && isSelected && "cursor-pointer",
-        
-        // Focus styles
-        "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
-      )}
-      disabled={isDisabled}
-      onClick={() => !isDisabled && handleDateClick(date)}
-    >
-      <span className={cn(
-        "text-base font-medium mb-1",
-        isSelected && "text-white"
-      )}>
-        {date.date()}
-      </span>
-      
-      {/* Show price only if available and not disabled */}
-      {!isDisabled && price > 0 && (
-        <span className={cn(
-          "text-xs font-medium",
-          isSelected ? "text-white" : "text-gray-600",
-          isInSelectedRange ? "text-primary" : ""
-        )}>
-          ${price}
-        </span>
-      )}
-      
-      {/* Show blocking reason */}
-      {isBlocked && !isPast && (
-        <span className="text-xs text-red-500 font-medium">
-          Blocked
-        </span>
-      )}
-      
-      {/* Show no rate for dates with zero price */}
-      {hasNoPrice && !isPast && !isBlocked && (
-        <span className="text-xs text-red-500 font-medium">
-          No Rate
-        </span>
-      )}
-    </button>
-  );
-});
-
-DateTemplate.displayName = 'DateTemplate';
+DateTemplate.displayName = "DateTemplate";
 
 // Calendar skeleton component
 const CalendarSkeleton = memo(() => (
   <div className="w-full space-y-4">
     <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6 lg:p-8">
       <div className="mb-4 sm:mb-6">
-        <div className="h-4 bg-gray-300 rounded w-24 mb-2 animate-pulse"></div>
-        <div className="h-3 bg-gray-300 rounded w-48 animate-pulse"></div>
+        <div className="mb-2 h-4 w-24 animate-pulse rounded bg-gray-300"></div>
+        <div className="h-3 w-48 animate-pulse rounded bg-gray-300"></div>
       </div>
 
       <div className="space-y-4 rounded-lg bg-gray-50 p-3 sm:p-4">
         {/* Header skeleton */}
         <div className="mb-6 flex items-center justify-between">
-          <div className="h-10 w-24 bg-gray-300 rounded animate-pulse"></div>
-          <div className="h-8 w-32 bg-gray-300 rounded animate-pulse"></div>
-          <div className="h-10 w-24 bg-gray-300 rounded animate-pulse"></div>
+          <div className="h-10 w-24 animate-pulse rounded bg-gray-300"></div>
+          <div className="h-8 w-32 animate-pulse rounded bg-gray-300"></div>
+          <div className="h-10 w-24 animate-pulse rounded bg-gray-300"></div>
         </div>
 
         {/* Calendar grid skeleton */}
@@ -163,7 +165,7 @@ const CalendarSkeleton = memo(() => (
           {/* Weekday headers */}
           <div className="grid grid-cols-7 gap-2">
             {Array.from({ length: 7 }).map((_, i) => (
-              <div key={i} className="h-8 bg-gray-300 rounded animate-pulse" />
+              <div key={i} className="h-8 animate-pulse rounded bg-gray-300" />
             ))}
           </div>
 
@@ -181,13 +183,21 @@ const CalendarSkeleton = memo(() => (
   </div>
 ));
 
-CalendarSkeleton.displayName = 'CalendarSkeleton';
+CalendarSkeleton.displayName = "CalendarSkeleton";
 
 export const RoomCalendar = ({ room }: ComponentProps) => {
-  const { roomData, setDateRange, clearDates } = useRoom();
+  const router = useRouter();
+  const { roomData, setDateRange, clearDates, setTotalPrice, setDuration } =
+    useRoom();
   const [currentMonth, setCurrentMonth] = useState<dayjs.Dayjs>(
     dayjs().startOf("month"),
   );
+  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const dateRange: DateRange = {
+    startDate: roomData.startDate ? dayjs(roomData.startDate) : null,
+    endDate: roomData.endDate ? dayjs(roomData.endDate) : null,
+  };
 
   const [blockDates] =
     api.ecoretreact.getBlockDateByRoomIdAndQuantity.useSuspenseQuery({
@@ -196,17 +206,10 @@ export const RoomCalendar = ({ room }: ComponentProps) => {
     });
 
   const pricesData = api.ecoretreact.getPricesWithRoomRateId.useQuery(
-    { roomRateId: roomData.rrpId ?? '' },
+    { roomRateId: roomData.rrpId ?? "" },
     { enabled: !!roomData.rrpId },
   );
 
-  // Get selected dates from store
-  const selectedStartDate = roomData.startDate
-    ? dayjs(roomData.startDate)
-    : null;
-  const selectedEndDate = roomData.endDate ? dayjs(roomData.endDate) : null;
-
-  // Navigate months
   const goToPreviousMonth = () => {
     setCurrentMonth(currentMonth.subtract(1, "month"));
   };
@@ -215,16 +218,20 @@ export const RoomCalendar = ({ room }: ComponentProps) => {
     setCurrentMonth(currentMonth.add(1, "month"));
   };
 
-  // Generate calendar days for the current month - optimized with useMemo
   const currentMonthDays: (dayjs.Dayjs | null)[][] = useMemo(() => {
     const firstDay = currentMonth.clone().startOf("month").day();
     const daysInMonth = currentMonth.daysInMonth();
-    const emptyDaysBefore: (dayjs.Dayjs | null)[] = Array(firstDay).fill(null) as (dayjs.Dayjs | null)[];
+    const emptyDaysBefore: (dayjs.Dayjs | null)[] = Array(firstDay).fill(
+      null,
+    ) as (dayjs.Dayjs | null)[];
     const currentMonthDays: dayjs.Dayjs[] = Array.from(
       { length: daysInMonth },
       (_, i) => currentMonth.clone().date(i + 1),
     );
-    const calendarGrid: (dayjs.Dayjs | null)[] = [...emptyDaysBefore, ...currentMonthDays];
+    const calendarGrid: (dayjs.Dayjs | null)[] = [
+      ...emptyDaysBefore,
+      ...currentMonthDays,
+    ];
     const weekGrid: (dayjs.Dayjs | null)[][] = [];
     const chunkSize = 7;
     for (let i = 0; i < calendarGrid.length; i += chunkSize) {
@@ -233,31 +240,17 @@ export const RoomCalendar = ({ room }: ComponentProps) => {
     return weekGrid;
   }, [currentMonth]);
 
-  const isDateBlocked = useCallback((date: dayjs.Dayjs): boolean => {
-    if (!blockDates || blockDates.length === 0) return false;
+  const isDateBlocked = useCallback(
+    (date: dayjs.Dayjs): boolean => {
+      if (!blockDates || blockDates.length === 0) return false;
 
-    return blockDates.some((blockDate: BlockDateProps) => {
-      const blockStart = dayjs(blockDate.startDate);
-      const blockEnd = dayjs(blockDate.endDate);
-
-      // Check if date falls within blocked range (inclusive)
-      return date.isBetween(blockStart, blockEnd, "day", "[]");
-    });
-  }, [blockDates]);
-
-  const isRangeValid = useCallback(
-    (start: dayjs.Dayjs, end: dayjs.Dayjs) => {
-      let currentDate = start.clone();
-      while (currentDate.isBefore(end) || currentDate.isSame(end, "day")) {
-        if (isDateBlocked(currentDate) || getPrice(currentDate) === 0) {
-          return false;
-        }
-        currentDate = currentDate.add(1, "day");
-      }
-      return true;
+      return blockDates.some((blockDate: BlockDateProps) => {
+        const blockStart = dayjs(blockDate.startDate);
+        const blockEnd = dayjs(blockDate.endDate);
+        return date.isBetween(blockStart, blockEnd, "day", "[]");
+      });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isDateBlocked],
+    [blockDates],
   );
 
   const getPrice = useCallback(
@@ -278,68 +271,117 @@ export const RoomCalendar = ({ room }: ComponentProps) => {
     [pricesData.data],
   );
 
-  const isDateDisabled = useCallback((date: dayjs.Dayjs) => {
-    // Disable past dates, blocked dates, and dates with no price
-    return date.isBefore(dayjs(), "day") || isDateBlocked(date) || getPrice(date) === 0;
-  }, [isDateBlocked, getPrice]);
-
-  const handleDateClick = useCallback((date: dayjs.Dayjs) => {
-    if (isDateDisabled(date)) {
-      return;
-    }
-
-    const clickedDate = date.format("YYYY-MM-DD");
-
-    // If no start date selected, or if we're selecting a new range
-    if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
-      setDateRange(clickedDate, null);
-    }
-    // If start date exists but no end date
-    else if (selectedStartDate && !selectedEndDate) {
-      const startDateObj = dayjs(roomData.startDate);
-
-      if (date.isBefore(startDateObj)) {
-        // If clicked date is before start date, make it the new start date
-        setDateRange(clickedDate, null);
-      } else {
-        // Check if range is valid before setting end date
-        if (isRangeValid(startDateObj, date)) {
-          setDateRange(roomData.startDate, clickedDate);
-        } else {
-          // Reset if range contains blocked dates
-          setDateRange(clickedDate, null);
+  const isRangeValid = useCallback(
+    (start: dayjs.Dayjs, end: dayjs.Dayjs) => {
+      let currentDate = start.clone();
+      while (currentDate.isBefore(end) || currentDate.isSame(end, "day")) {
+        if (isDateBlocked(currentDate) || getPrice(currentDate) === 0) {
+          return false;
         }
+        currentDate = currentDate.add(1, "day");
       }
-    }
-  }, [selectedStartDate, selectedEndDate, roomData.startDate, setDateRange, isDateDisabled, isRangeValid]);
+      return true;
+    },
+    [isDateBlocked, getPrice],
+  );
 
-  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const isDateDisabled = useCallback(
+    (date: dayjs.Dayjs) => {
+      return (
+        date.isBefore(dayjs(), "day") ||
+        isDateBlocked(date) ||
+        getPrice(date) === 0
+      );
+    },
+    [isDateBlocked, getPrice],
+  );
 
-  const dateRange: DateRange = {
-    startDate: selectedStartDate,
-    endDate: selectedEndDate,
-  };
-
-  // Calculate total nights and price
   const totalNights = useMemo(() => {
-    if (!selectedStartDate || !selectedEndDate) return 0;
-    return selectedEndDate.diff(selectedStartDate, "day");
-  }, [selectedStartDate, selectedEndDate]);
+    if (!roomData.startDate || !roomData.endDate) {
+      return 0;
+    }
+    return dayjs(roomData.endDate).diff(dayjs(roomData.startDate), "day");
+  }, [roomData.startDate, roomData.endDate]);
 
   const totalPrice = useMemo(() => {
-    if (!selectedStartDate || !selectedEndDate) return 0;
+    if (!roomData.startDate || !roomData.endDate) {
+      return 0;
+    }
+
     let total = 0;
-    let currentDate = selectedStartDate.clone();
-    
-    while (currentDate.isBefore(selectedEndDate, "day")) {
+    let currentDate = dayjs(roomData.startDate).clone();
+    const endDate = dayjs(roomData.endDate);
+
+    while (currentDate.isBefore(endDate, "day")) {
       total += getPrice(currentDate);
       currentDate = currentDate.add(1, "day");
     }
-    
-    return total * roomData.quantity;
-  }, [selectedStartDate, selectedEndDate, getPrice, roomData.quantity]);
 
-  // Show skeleton while loading
+    return total * roomData.quantity;
+  }, [roomData.startDate, roomData.endDate, getPrice, roomData.quantity]);
+
+  useEffect(() => {
+    setDuration(totalNights);
+  }, [totalNights, setDuration]);
+
+  useEffect(() => {
+    setTotalPrice(totalPrice);
+  }, [totalPrice, setTotalPrice]);
+
+  const handleDateClick = useCallback(
+    (date: dayjs.Dayjs) => {
+      if (isDateDisabled(date)) {
+        return;
+      }
+
+      const clickedDate = date.format("YYYY-MM-DD");
+
+      if (!roomData.startDate) {
+        setDateRange(clickedDate, null);
+        return;
+      }
+
+      if (roomData.startDate && !roomData.endDate) {
+        const startDateObj = dayjs(roomData.startDate);
+
+        if (date.isBefore(startDateObj)) {
+          setDateRange(clickedDate, null);
+        } else if (date.isSame(startDateObj, "day")) {
+          setDateRange(null, null);
+        } else {
+          if (isRangeValid(startDateObj, date)) {
+            setDateRange(roomData.startDate, clickedDate);
+          } else {
+            setDateRange(clickedDate, null);
+          }
+        }
+        return;
+      }
+
+      if (roomData.startDate && roomData.endDate) {
+        const startDateObj = dayjs(roomData.startDate);
+        const endDateObj = dayjs(roomData.endDate);
+
+        if (
+          date.isSame(startDateObj, "day") ||
+          date.isSame(endDateObj, "day")
+        ) {
+          setDateRange(null, null);
+        } else {
+          setDateRange(clickedDate, null);
+        }
+        return;
+      }
+    },
+    [
+      roomData.startDate,
+      roomData.endDate,
+      setDateRange,
+      isDateDisabled,
+      isRangeValid,
+    ],
+  );
+
   if (pricesData.isLoading || !roomData.rrpId) {
     return <CalendarSkeleton />;
   }
@@ -357,7 +399,6 @@ export const RoomCalendar = ({ room }: ComponentProps) => {
         </div>
 
         <div className="space-y-4 rounded-lg bg-gray-50 p-3 sm:p-4">
-          {/* Header with navigation */}
           <div className="mb-6 flex items-center justify-between">
             <Button
               type="button"
@@ -386,14 +427,12 @@ export const RoomCalendar = ({ room }: ComponentProps) => {
             </Button>
           </div>
 
-          {/* Calendar Grid */}
           <div className="space-y-2">
-            {/* Weekday headers */}
             <div className="grid grid-cols-7 gap-2">
               {weekdays.map((day) => (
                 <div
                   key={day}
-                  className="text-center text-sm font-semibold text-gray-700 py-2"
+                  className="py-2 text-center text-sm font-semibold text-gray-700"
                 >
                   <span className="hidden sm:inline">{day}</span>
                   <span className="sm:hidden">{day.charAt(0)}</span>
@@ -401,7 +440,6 @@ export const RoomCalendar = ({ room }: ComponentProps) => {
               ))}
             </div>
 
-            {/* Calendar days */}
             {currentMonthDays.map((week, index) => (
               <div key={index} className="grid grid-cols-7 gap-2">
                 {week.map((date, dateIndex) => (
@@ -418,26 +456,25 @@ export const RoomCalendar = ({ room }: ComponentProps) => {
             ))}
           </div>
 
-          {/* Selected date range display */}
-          {selectedStartDate && (
+          {roomData.startDate && (
             <div className="mt-6 rounded-lg bg-blue-50 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-2 text-sm">
                   <span className="font-medium text-gray-700">
-                    {selectedEndDate ? "Selected Dates:" : "Check-in Date:"}
+                    {roomData.endDate ? "Selected Dates:" : "Check-in Date:"}
                   </span>
                   <span className="rounded-full bg-primary/10 px-3 py-1 font-medium text-primary">
-                    {selectedStartDate.format("MMM D, YYYY")}
+                    {dayjs(roomData.startDate).format("MMM D, YYYY")}
                   </span>
-                  {selectedEndDate && (
+                  {roomData.endDate && (
                     <>
                       <span className="text-gray-500">to</span>
                       <span className="rounded-full bg-primary/10 px-3 py-1 font-medium text-primary">
-                        {selectedEndDate.format("MMM D, YYYY")}
+                        {dayjs(roomData.endDate).format("MMM D, YYYY")}
                       </span>
                     </>
                   )}
-                  {selectedEndDate && totalNights > 0 && (
+                  {roomData.endDate && totalNights > 0 && (
                     <>
                       <span className="rounded-full bg-green-100 px-3 py-1 font-medium text-green-700">
                         {totalNights} nights
@@ -461,19 +498,22 @@ export const RoomCalendar = ({ room }: ComponentProps) => {
             </div>
           )}
 
-          {/* Action Buttons */}
           <div className="flex gap-2 pt-4">
             <Button
               variant="outline"
               onClick={clearDates}
               className="flex-1"
-              disabled={!selectedStartDate}
+              disabled={!roomData.startDate}
             >
               Reset
             </Button>
             <Button
+              type="button"
               className="flex-1"
-              disabled={!selectedStartDate || !selectedEndDate}
+              disabled={!roomData.startDate || !roomData.endDate}
+              onClick={() => {
+                router.push(`/eco-retreat/booking?roomId=${room.roomId}`);
+              }}
             >
               Continue
             </Button>
